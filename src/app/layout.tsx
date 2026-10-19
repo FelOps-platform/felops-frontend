@@ -1,10 +1,4 @@
-import type { Metadata } from "next";
 import "./globals.css";
-
-export const metadata: Metadata = {
-  title: "FelOps",
-  description: "FelOps Application",
-};
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
