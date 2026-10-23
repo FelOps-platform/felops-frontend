@@ -19,7 +19,7 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} dir={isRtl ? "rtl" : "ltr"}>
-      <body>
+      <body className="h-screen bg-secondary-950 antialiased ">
         <NextIntlClientProvider messages={messages}>
           {children}
         </NextIntlClientProvider>
