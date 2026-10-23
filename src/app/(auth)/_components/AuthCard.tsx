@@ -6,7 +6,7 @@ interface AuthCardProps {
 
 export default function AuthCard({ children }: AuthCardProps) {
   return (
-    <div className="w-full max-w-[540px] rounded-[24px] border border-secondary-50 bg-transparent p-8 sm:p-10 shadow-2xl text-secondary-50 secondary-50 ">
+    <div className="w-full max-w-[540px] rounded-[24px] border border-secondary-50 bg-transparent p-8 sm:p-10 shadow-2xl">
       {children}
     </div>
   );
