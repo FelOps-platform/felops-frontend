@@ -1,1 +1,181 @@
 @import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+@theme {
+  /* Primary */
+  --color-primary-50: var(--primary-50);
+  --color-primary-100: var(--primary-100);
+  --color-primary-200: var(--primary-200);
+  --color-primary-300: var(--primary-300);
+  --color-primary-400: var(--primary-400);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+  --color-primary-800: var(--primary-800);
+  --color-primary-900: var(--primary-900);
+  --color-primary-950: var(--primary-950);
+  --color-primary: var(--primary-500);
+
+  /* Secondary */
+  --color-secondary-50: var(--secondary-50);
+  --color-secondary-100: var(--secondary-100);
+  --color-secondary-200: var(--secondary-200);
+  --color-secondary-300: var(--secondary-300);
+  --color-secondary-400: var(--secondary-400);
+  --color-secondary-500: var(--secondary-500);
+  --color-secondary-600: var(--secondary-600);
+  --color-secondary-700: var(--secondary-700);
+  --color-secondary-800: var(--secondary-800);
+  --color-secondary-900: var(--secondary-900);
+  --color-secondary-950: var(--secondary-950);
+  --color-secondary: var(--secondary-500);
+
+  /* Secondary 2 */
+  --color-secondary-2-50: var(--secondary-2-50);
+  --color-secondary-2-100: var(--secondary-2-100);
+  --color-secondary-2-200: var(--secondary-2-200);
+  --color-secondary-2-300: var(--secondary-2-300);
+  --color-secondary-2-400: var(--secondary-2-400);
+  --color-secondary-2-500: var(--secondary-2-500);
+  --color-secondary-2-600: var(--secondary-2-600);
+  --color-secondary-2-700: var(--secondary-2-700);
+  --color-secondary-2-800: var(--secondary-2-800);
+  --color-secondary-2-900: var(--secondary-2-900);
+  --color-secondary-2-950: var(--secondary-2-950);
+  --color-secondary-2: var(--secondary-2-500);
+
+  --color-secondary2-50: var(--secondary-2-50);
+  --color-secondary2-100: var(--secondary-2-100);
+  --color-secondary2-200: var(--secondary-2-200);
+  --color-secondary2-300: var(--secondary-2-300);
+  --color-secondary2-400: var(--secondary-2-400);
+  --color-secondary2-500: var(--secondary-2-500);
+  --color-secondary2-600: var(--secondary-2-600);
+  --color-secondary2-700: var(--secondary-2-700);
+  --color-secondary2-800: var(--secondary-2-800);
+  --color-secondary2-900: var(--secondary-2-900);
+  --color-secondary2-950: var(--secondary-2-950);
+  --color-secondary2: var(--secondary-2-500);
+
+  /* Neutral */
+  --color-neutral-50: var(--neutral-50);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-500: var(--neutral-500);
+  --color-neutral-600: var(--neutral-600);
+  --color-neutral-700: var(--neutral-700);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-900: var(--neutral-900);
+  --color-neutral-950: var(--neutral-950);
+  --color-neutral: var(--neutral-500);
+
+  /* Wrong */
+  --color-wrong-50: var(--wrong-50);
+  --color-wrong-100: var(--wrong-100);
+  --color-wrong-200: var(--wrong-200);
+  --color-wrong-300: var(--wrong-300);
+  --color-wrong-400: var(--wrong-400);
+  --color-wrong-500: var(--wrong-500);
+  --color-wrong-600: var(--wrong-600);
+  --color-wrong-700: var(--wrong-700);
+  --color-wrong-800: var(--wrong-800);
+  --color-wrong-900: var(--wrong-900);
+  --color-wrong-950: var(--wrong-950);
+  --color-wrong: var(--wrong-500);
+
+  /* Right */
+  --color-right-50: var(--right-50);
+  --color-right-100: var(--right-100);
+  --color-right-200: var(--right-200);
+  --color-right-300: var(--right-300);
+  --color-right-400: var(--right-400);
+  --color-right-500: var(--right-500);
+  --color-right-600: var(--right-600);
+  --color-right-700: var(--right-700);
+  --color-right-800: var(--right-800);
+  --color-right-900: var(--right-900);
+  --color-right-950: var(--right-950);
+  --color-right: var(--right-500);
+}
+
+:root {
+  /* Primary */
+  --primary-50: #FFF3EB;
+  --primary-100: #FFD9C0;
+  --primary-200: #FFBF95;
+  --primary-300: #FFA46A;
+  --primary-400: #FF8A3F;
+  --primary-500: #FF6400;
+  --primary-600: #E95B00;
+  --primary-700: #BE4A00;
+  --primary-800: #933A00;
+  --primary-900: #682900;
+  --primary-950: #3D1800;
+
+  /* Secondary */
+  --secondary-50: #EFF1FA;
+  --secondary-100: #CED3F1;
+  --secondary-200: #ADB5E7;
+  --secondary-300: #8C97DE;
+  --secondary-400: #6A7AD4;
+  --secondary-500: #495CCA;
+  --secondary-600: #3345B0;
+  --secondary-700: #2B3A93;
+  --secondary-800: #212D72;
+  --secondary-900: #172051;
+  --secondary-950: #0E132F;
+
+  /* Secondary 2 */
+  --secondary-2-50: #FFFAEB;
+  --secondary-2-100: #FFEEC0;
+  --secondary-2-200: #FFE395;
+  --secondary-2-300: #FFD86A;
+  --secondary-2-400: #FFCC3F;
+  --secondary-2-500: #FFC114;
+  --secondary-2-600: #F2B200;
+  --secondary-2-700: #BE8C00;
+  --secondary-2-800: #936C00;
+  --secondary-2-900: #684D00;
+  --secondary-2-950: #3D2D00;
+
+  /* Neutral */
+  --neutral-50: #F5F5F5;
+  --neutral-100: #E5E5E5;
+  --neutral-200: #CACACA;
+  --neutral-300: #B5B5B5;
+  --neutral-400: #9F9F9F;
+  --neutral-500: #8A8A8A;
+  --neutral-600: #747474;
+  --neutral-700: #5F5F5F;
+  --neutral-800: #494949;
+  --neutral-900: #343434;
+  --neutral-950: #1F1F1F;
+
+  /* Wrong */
+  --wrong-50: #FFFAFA;
+  --wrong-100: #FFCECE;
+  --wrong-200: #FFA2A2;
+  --wrong-300: #FE7575;
+  --wrong-400: #FE4949;
+  --wrong-500: #FE1D1D;
+  --wrong-600: #FE0101;
+  --wrong-700: #C10101;
+  --wrong-800: #950101;
+  --wrong-900: #690101;
+  --wrong-950: #3D0000;
+
+  /* Right */
+  --right-50: #EBFFF1;
+  --right-100: #C0FFD5;
+  --right-200: #95FFB8;
+  --right-300: #57FF8F;
+  --right-400: #3FFF7F;
+  --right-500: #14FF63;
+  --right-600: #00E94E;
+  --right-700: #00BE3F;
+  --right-800: #009331;
+  --right-900: #006823;
+  --right-950: #003D14;
+}
