@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { signUpSchema } from "../schemas/auth";
-// import VerifyOtpModal from "../_components/VerifyOtpModal";
+import VerifyOtpModal from "../_components/VerifyOtpModal";
 
 export default function SignUpForm() {
   const [formData, setFormData] = useState({
@@ -20,7 +20,7 @@ export default function SignUpForm() {
     general?: string;
   }>({});
   const [isLoading, setIsLoading] = useState(false);
-  // const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
+  const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -52,7 +52,7 @@ export default function SignUpForm() {
     try {
       // TODO: Call backend API via auth service and open the OTP verification modal
       console.log("Validated Data ready for API:", validationResult.data);
-      // setIsOtpModalOpen(true);
+      setIsOtpModalOpen(true);
     } catch (err: any) {
       setErrors({
         general: err?.message || "Something went wrong. Please try again.",
@@ -61,9 +61,29 @@ export default function SignUpForm() {
       setIsLoading(false);
     }
   };
-  // const handleVerifyOtp = (otpCode: string) => {
-  //   console.log("Verifying OTP code:", otpCode, "for email:", formData.email);
-  // };
+  const handleVerifyOtp = async (otpCode: string) => {
+    try {
+      // TODO: Call backend verify OTP service
+      // const response = await authService.verifyOtp({ email: formData.email, code: otpCode });
+
+      console.log("Verifying OTP code:", otpCode, "for email:", formData.email);
+
+      // TODO: On success, redirect the user to the dashboard or home page
+      // router.push("/dashboard");
+    } catch (err: any) {
+      // TODO: Handle error (e.g., invalid or expired code)
+      console.error("Verification failed:", err.message);
+    }
+  };
+  const handleResendOtp = async () => {
+    try {
+      // TODO: Call backend API to resend OTP code for this email
+      // await authService.resendOtp({ email: formData.email });
+      console.log("Resending new OTP code to:", formData.email);
+    } catch (err: any) {
+      console.error("Failed to resend OTP:", err.message);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -172,12 +192,13 @@ export default function SignUpForm() {
           </Link>
         </div>
       </form>
-      {/* <VerifyOtpModal
+      <VerifyOtpModal
         isOpen={isOtpModalOpen}
         onClose={() => setIsOtpModalOpen(false)}
         email={formData.email}
         onVerify={handleVerifyOtp}
-      /> */}
+        onResend={handleResendOtp}
+      />
     </div>
   );
 }
