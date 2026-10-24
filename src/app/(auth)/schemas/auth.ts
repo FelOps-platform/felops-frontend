@@ -21,4 +21,12 @@ export const signUpSchema = z.object({
     .regex(/[0-9]/, "Password must contain at least one number"),
 });
 
+export const verifyOtpSchema = z.object({
+  email: z.string().trim().toLowerCase().email(),
+  code: z
+    .string()
+    .regex(/^\d{6}$/, "Verification code must be exactly 6 digits"),
+});
+
 export type SignUpInput = z.infer<typeof signUpSchema>;
+export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>;

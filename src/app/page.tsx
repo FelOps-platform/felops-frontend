@@ -18,9 +18,7 @@ export default function HomePage() {
 
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-6">
-      <main className="text-5xl font-bold tracking-wider">
-        {t("title")}
-      </main>
+      <main className="text-5xl font-bold tracking-wider">{t("title")}</main>
       <button
         type="button"
         onClick={switchLanguage}

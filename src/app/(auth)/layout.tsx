@@ -52,7 +52,7 @@ export default function AuthLayout({
 
       <main className="relative z-10 flex-1 grid grid-cols-1 lg:grid-cols-12 items-center px-6 lg:px-16 py-12 gap-12 max-w-[1440px] mx-auto w-full">
         <div className="lg:col-span-7 flex flex-col justify-center space-y-6">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.18]">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-secondary-50 leading-[1.18]">
             Move work forward,
             <br />
             with control built in.
