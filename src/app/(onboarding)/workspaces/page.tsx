@@ -1,20 +1,115 @@
 import Link from "next/link";
-export default function WorkspacesPage() {
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4 ">
-      <h1 className="font-mono text-2xl font-bold">/workspaces</h1>
+import { Plus, ArrowRight, Bot } from "lucide-react";
 
-      <div className="flex flex-col gap-2">
-        <Link
-          href="/workspaces/new"
-          className="rounded border px-4 py-2 text-sm "
-        >
-          Click &apos;Create New&apos; &rarr; /workspaces/new
-        </Link>
-        <Link href="/" className="rounded border px-4 py-2 text-sm ">
-          Click &rarr; /dashboeard
-        </Link>
+export interface Workspace {
+  id: string;
+  name: string;
+  agentsCount: number;
+  role: "Owner" | "Admin" | "Member";
+}
+
+const getWorkspaceInitials = (name: string) => {
+  return name
+    .trim()
+    .split(/\s+/)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 3);
+};
+
+// TODO: Fetch workspaces dynamically from backend API (e.g., workspaceService.getWorkspaces())
+const mockWorkspaces: Workspace[] = [
+  {
+    id: "ws-ai-production",
+    name: "AI Production Hub",
+    agentsCount: 8,
+    role: "Owner",
+  },
+  {
+    id: "ws-enterprise-ops",
+    name: "Enterprise Operations",
+    agentsCount: 4,
+    role: "Admin",
+  },
+  {
+    id: "ws-customer-fleet",
+    name: "Customer Support Fleet",
+    agentsCount: 12,
+    role: "Member",
+  },
+];
+
+export default function WorkspacesPage() {
+  const workspaces = mockWorkspaces;
+
+  return (
+    <div className="w-full">
+      <div className="mb-6">
+        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-secondary-50">
+          Workspaces
+        </h2>
+        <p className="text-xs sm:text-sm text-neutral-400 mt-1">
+          Select a workspace to continue or create a new one
+        </p>
       </div>
+
+      {workspaces.length === 0 ? (
+        <div className="text-center py-6 space-y-4">
+          <p className="text-xs sm:text-sm text-neutral-400">
+            No workspaces found. Create your first workspace to get started.
+          </p>
+          <Link
+            href="/workspaces/new"
+            className="w-full py-3.5 px-4 rounded-xl bg-secondary-50 text-secondary-950 font-semibold text-sm hover:bg-secondary-100 transition-colors shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create Workspace</span>
+          </Link>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="space-y-2.5 max-h-[300px] overflow-y-auto pr-1">
+            {workspaces.map((ws) => (
+              <Link
+                key={ws.id}
+                href={`/w/${ws.id}`}
+                className="group flex items-center justify-between p-3.5 rounded-xl bg-neutral-900/40 border border-secondary-50/20 hover:border-secondary-50/60 hover:bg-secondary-900/40 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-secondary-950 border border-secondary-950 flex items-center justify-center text-secondary-50 font-bold text-xs tracking-tight shrink-0 select-none">
+                    {getWorkspaceInitials(ws.name)}
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-secondary-50 group-hover:text-white transition-colors">
+                      {ws.name}
+                    </h3>
+                    <div className="flex items-center gap-2 text-xs text-neutral-400 mt-0.5">
+                      <span className="flex items-center gap-1">
+                        <Bot className="w-3 h-3 text-secondary-400" />
+                        {ws.agentsCount}{" "}
+                        {ws.agentsCount === 1 ? "Agent" : "Agents"}
+                      </span>
+                      <span>•</span>
+                      <span className="text-secondary-100">{ws.role}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <ArrowRight className="w-4 h-4 text-neutral-400 group-hover:text-secondary-50 group-hover:translate-x-0.5 transition-all" />
+              </Link>
+            ))}
+          </div>
+
+          <Link
+            href="/workspaces/new"
+            className="w-full mt-2 py-3.5 px-4 rounded-xl bg-secondary-50 text-secondary-950 font-semibold text-sm hover:bg-secondary-100 transition-colors shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create Workspace</span>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
