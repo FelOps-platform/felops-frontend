@@ -6,9 +6,11 @@ export function AppFrame({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen">
-      <aside className="w-64 border-r border-slate-200 p-4">{sidebar}</aside>
-      <main className="flex-1 p-6">{children}</main>
+    <div className="flex h-screen w-full bg-secondary-950 text-secondary-50 overflow-hidden">
+      {sidebar}
+      <main className="flex-1 overflow-y-auto p-6 lg:p-8 scrollbar-thin scrollbar-thumb-secondary-900">
+        {children}
+      </main>
     </div>
   );
 }
