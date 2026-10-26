@@ -106,7 +106,7 @@ export function WorkspaceSidebar({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-5 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-secondary-800 [&::-webkit-scrollbar-thumb]:rounded-full">
+      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-5 sidebar-scroll">
         {/* Group 1: Workspace */}
         <div className="space-y-1">
           <p className="px-3 py-1 text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">
@@ -115,7 +115,7 @@ export function WorkspaceSidebar({
           <nav className="space-y-0.5">
             <Link
               href={`/w/${workspaceId}`}
-              className={`flex items-center gap-3 px-3 py-4 rounded-xl text-xs sm:text-sm transition-colors ${
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
                 pathname === `/w/${workspaceId}`
                   ? "bg-secondary-500 text-secondary-50 font-semibold"
                   : "text-secondary-50 hover:text-secondary-50"
@@ -127,7 +127,7 @@ export function WorkspaceSidebar({
 
             <Link
               href={`/w/${workspaceId}/agents`}
-              className={`flex items-center gap-3 px-3  py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
                 pathname.startsWith(`/w/${workspaceId}/agents`)
                   ? "bg-secondary-500 text-secondary-50 font-semibold"
                   : "text-secondary-50 hover:text-secondary-50"
@@ -139,7 +139,7 @@ export function WorkspaceSidebar({
 
             <Link
               href={`/w/${workspaceId}/integrations`}
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
                 pathname.startsWith(`/w/${workspaceId}/integrations`)
                   ? "bg-secondary-500 text-secondary-50 font-semibold"
                   : "text-secondary-50 hover:text-secondary-50"
@@ -151,7 +151,7 @@ export function WorkspaceSidebar({
 
             <Link
               href={`/w/${workspaceId}/knowledge`}
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
                 pathname.startsWith(`/w/${workspaceId}/knowledge`)
                   ? "bg-secondary-500 text-secondary-50 font-semibold"
                   : "text-secondary-50 hover:text-secondary-50"
@@ -163,7 +163,7 @@ export function WorkspaceSidebar({
 
             <Link
               href={`/w/${workspaceId}/conversations`}
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
                 pathname.startsWith(`/w/${workspaceId}/conversations`)
                   ? "bg-secondary-500 text-secondary-50 font-semibold"
                   : "text-secondary-50 hover:text-secondary-50"
@@ -175,7 +175,7 @@ export function WorkspaceSidebar({
 
             <Link
               href={`/w/${workspaceId}/audit-trail`}
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
                 pathname.startsWith(`/w/${workspaceId}/audit-trail`)
                   ? "bg-secondary-500 text-secondary-50 font-semibold"
                   : "text-secondary-50 hover:text-secondary-50"
@@ -195,7 +195,7 @@ export function WorkspaceSidebar({
           <nav className="space-y-0.5">
             <Link
               href={`/w/${workspaceId}/policies`}
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
                 pathname.startsWith(`/w/${workspaceId}/policies`)
                   ? "bg-secondary-500 text-secondary-50 font-semibold"
                   : "text-secondary-50 hover:text-secondary-50"
@@ -207,7 +207,7 @@ export function WorkspaceSidebar({
 
             <Link
               href={`/w/${workspaceId}/settings`}
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
                 pathname.startsWith(`/w/${workspaceId}/settings`)
                   ? "bg-secondary-500 text-secondary-50 font-semibold"
                   : "text-secondary-50 hover:text-secondary-50"
@@ -227,7 +227,7 @@ export function WorkspaceSidebar({
           <nav className="space-y-0.5">
             <Link
               href="/account/profile"
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
                 pathname.startsWith("/account/profile")
                   ? "bg-secondary-500 text-secondary-50 font-semibold"
                   : "text-secondary-50 hover:text-secondary-50"
@@ -239,7 +239,7 @@ export function WorkspaceSidebar({
 
             <Link
               href="/account/billing"
-              className={`flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
                 pathname.startsWith("/account/billing")
                   ? "bg-secondary-500 text-secondary-50 font-semibold"
                   : "text-secondary-50 hover:text-secondary-50"
