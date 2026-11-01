@@ -112,7 +112,7 @@ export default function NewWorkspacePage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full mt-2 py-3.5 px-4 rounded-xl bg-secondary-50 text-secondary-950 font-semibold text-sm hover:bg-secondary-100 transition-colors shadow-lg disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+          className="w-full mt-2 py-3.5 px-4 rounded-xl bg-secondary-500 text-secondary-50 font-semibold text-sm hover:bg-secondary-50 hover:text-secondary-950 transition-colors shadow-lg disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
         >
           {isLoading ? (
             <>
