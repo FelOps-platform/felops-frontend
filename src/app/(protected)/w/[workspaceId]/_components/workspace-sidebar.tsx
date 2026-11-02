@@ -56,7 +56,7 @@ export function WorkspaceSidebarFallback() {
 
         {/* Workspace Button Placeholder */}
         <div className="px-3 pt-3 pb-2">
-          <div className="w-full h-12 rounded-xl bg-neutral-900 border border-secondary-50/20 animate-pulse" />
+          <div className="w-4/5 h-12 rounded-xl bg-neutral-900 border border-secondary-50/20 animate-pulse" />
         </div>
       </div>
 
@@ -134,7 +134,7 @@ function WorkspaceSidebarContent({
           <button
             type="button"
             onClick={onWorkspaceClick}
-            className="w-full flex items-center justify-between p-3 rounded-xl bg-neutral-900
+            className="w-4/5 flex items-center justify-between p-3 rounded-xl bg-neutral-900
             border border-secondary-50 hover:border-secondary-50/40 hover:bg-neutral-900/70 
             transition-all text-left group cursor-pointer"
           >
