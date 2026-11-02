@@ -1,5 +1,6 @@
+import { Suspense } from "react";
 import { AppFrame } from "../_components/app-frame";
-import { WorkspaceSidebar } from "../_components/workspace-sidebar";
+import { WorkspaceSidebar, WorkspaceSidebarFallback } from "../_components/workspace-sidebar";
 
 export default async function WorkspaceGroupLayout({
   children,
@@ -11,7 +12,13 @@ export default async function WorkspaceGroupLayout({
   const { workspaceId } = await params;
 
   return (
-    <AppFrame sidebar={<WorkspaceSidebar workspaceId={workspaceId} />}>
+    <AppFrame
+      sidebar={
+        <Suspense fallback={<WorkspaceSidebarFallback />}>
+          <WorkspaceSidebar workspaceId={workspaceId} />
+        </Suspense>
+      }
+    >
       {children}
     </AppFrame>
   );
