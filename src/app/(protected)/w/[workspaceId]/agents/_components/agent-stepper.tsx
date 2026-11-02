@@ -1,27 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Check,
-  ChevronRight,
-  FileText,
-  Cpu,
-  ShieldCheck,
-  Sliders,
-  Eye,
-} from "lucide-react";
+import { Check, ChevronLeft } from "lucide-react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 const steps = [
-  { id: 1, title: "Name & Instructions", description: "Basic information" },
-  { id: 2, title: "Knowledge", description: "Connect data sources" },
-  { id: 3, title: "Actions", description: "Setup tools & APIs" },
-  { id: 4, title: "Channels", description: "Deploy endpoints" },
-  { id: 5, title: "Preview & Review", description: "Final checks" },
+  { id: 1, title: "Basic information", description: "Name and instructions" },
+  { id: 2, title: "Assign Actions", description: "Choose Workspace Actions" },
+  { id: 3, title: "Configure Knowledge", description: "Assign shared or private sources" },
+  { id: 4, title: "Review & save", description: "Confirm configuration" },
 ];
 
-export function AgentStepperForm() {
-  const [currentStep, setCurrentStep] = useState(1);
+interface AgentStepperFormProps {
+  workspaceId?: string;
+}
 
+export function AgentStepperForm({ workspaceId }: AgentStepperFormProps) {
+  const params = useParams();
+  const activeWorkspaceId = workspaceId || (params?.workspaceId as string) || "";
+  const [currentStep, setCurrentStep] = useState(1);
   const handleNext = () => {
     if (currentStep < steps.length) {
       setCurrentStep((prev) => prev + 1);
@@ -35,117 +33,151 @@ export function AgentStepperForm() {
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Create agent</h1>
-          <p className="text-sm text-slate-500">
-            Step {currentStep} of {steps.length} —{" "}
-            {steps[currentStep - 1].title}.
-          </p>
+    <div className="max-w-6xl mx-auto p-6">
+      <div className="flex justify-between items-center mb-10">
+        <div className="flex items-center gap-4">
+          <Link
+            href={`/w/${activeWorkspaceId}/agents`}
+            className="w-10 h-10 rounded-xl border border-slate-200 bg-secondary-50 flex items-center justify-center text-secondary-950 hover:bg-slate-50 transition-colors shadow-sm"
+            title="Back to Agents"
+          >
+            <ChevronLeft className="w-5 h-5" strokeWidth={5} />
+          </Link>
         </div>
-        <button
-          type="button"
-          className="px-4 py-2 text-sm font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-        >
-          Save draft
-        </button>
       </div>
 
-      <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-6 overflow-x-auto">
-        {steps.map((step, index) => {
-          const isCompleted = currentStep > step.id;
-          const isCurrent = currentStep === step.id;
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-          return (
-            <div
-              key={step.id}
-              className="flex items-center gap-3 flex-1 min-w-[180px]"
-            >
+        {/* Left Sidebar Stepper */}
+        <div className="lg:col-span-4 flex flex-col gap-3">
+          {steps.map((step) => {
+            const isCompleted = currentStep > step.id;
+            const isCurrent = currentStep === step.id;
+
+            return (
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all ${
-                  isCompleted
-                    ? "bg-slate-900 text-white"
-                    : isCurrent
-                      ? "bg-orange-600 text-white shadow-md shadow-orange-600/20"
-                      : "bg-slate-100 text-slate-400"
-                }`}
+                key={step.id}
+                onClick={() => setCurrentStep(step.id)}
+                className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all`}
               >
-                {isCompleted ? <Check className="w-5 h-5" /> : step.id}
-              </div>
-
-              <div className="flex flex-col">
-                <span
-                  className={`text-sm font-medium ${isCurrent ? "text-slate-900" : "text-slate-500"}`}
+                <div
+                  className={`w-9 h-9 rounded-full flex items-center justify-center font-semibold text-sm shrink-0 transition-all ${isCompleted
+                    ? "bg-emerald-500 text-secondary-50"
+                    : isCurrent
+                      ? "bg-secondary-600 text-secondary-50"
+                      : "text-secondary-50 border border-secondary-50"
+                    }`}
                 >
-                  {step.title}
-                </span>
-                <span className="text-xs text-slate-400">
-                  {step.description}
-                </span>
+                  {isCompleted ? <Check className="w-5 h-5" /> : step.id}
+                </div>
+
+                <div className="flex flex-col">
+                  <span className={`text-sm font-semibold text-secondary-50`}>
+                    {step.title}
+                  </span>
+                  <span className={`text-xs text-secondary-200`}>
+                    {step.description}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Card */}
+        <div className="lg:col-span-8 bg-neutral-50 border border-slate-200/80 rounded-2xl p-8 shadow-sm">
+
+          {/* Step 1: Basic Information */}
+          {currentStep === 1 && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-semibold text-secondary-950">Basic information</h2>
+                <p className="text-sm text-secondary-200 mt-1">
+                  Give the Agent a clear name and describe how it should work.
+                </p>
               </div>
 
-              {index < steps.length - 1 && (
-                <ChevronRight className="w-4 h-4 text-slate-300 mx-auto hidden md:block" />
-              )}
+              {/* <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-900">Agent name</label>
+                <input
+                  type="text"
+                  value={agentName}
+                  onChange={(e) => setAgentName(e.target.value)}
+                  placeholder="For example, Customer onboarding"
+                  className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all text-slate-900 placeholder:text-slate-400"
+                />
+                <p className="text-xs text-slate-500">Use a name that reflects the business work this Agent supports.</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-900">Instructions</label>
+                <textarea
+                  rows={5}
+                  value={agentInstructions}
+                  onChange={(e) => setAgentInstructions(e.target.value)}
+                  placeholder="Describe the Agent's responsibilities, expected behavior, constraints, and when it should ask for clarification."
+                  className="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all text-slate-900 placeholder:text-slate-400 resize-none"
+                />
+                <p className="text-xs text-slate-500">Be specific about responsibilities, boundaries, and working preferences.</p>
+              </div> */}
             </div>
-          );
-        })}
-      </div>
+          )}
 
-      <div className="min-h-[300px] mb-8">
-        {currentStep === 1 && (
-          <div>
-            <h3>1. Name & Instructions</h3>
+          {/* Step 2: Assign Actions */}
+          {currentStep === 2 && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-semibold text-secondary-950">Assign Workspace Actions</h2>
+                <p className="text-sm text-secondary-200 mt-1">Choose which available Actions this Agent may request. Policies still apply at execution time.</p>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Configure Knowledge */}
+          {currentStep === 3 && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-semibold text-secondary-950">Configure Knowledge</h2>
+                <p className="text-sm text-secondary-200 mt-1">Select existing Knowledge sources from your Workspace to make them available to this Agent.</p>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Review & Save */}
+          {currentStep === 4 && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-semibold text-secondary-950">Review & save</h2>
+                <p className="text-sm text-secondary-200 mt-1">Confirm configuration and publish your new agent.</p>
+              </div>
+            </div>
+          )}
+
+          {/*  (Back / Continue) */}
+          <div className="flex justify-between items-center pt-6 mt-8 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={handleBack}
+              disabled={currentStep === 1}
+              className={`px-5 py-2 text-sm font-medium rounded-xl border border-slate-200 transition-colors ${currentStep === 1
+                ? "opacity-40 cursor-not-allowed bg-slate-50 text-slate-400"
+                : "hover:bg-slate-50 text-slate-700 bg-white"
+                }`}
+            >
+              Back
+            </button>
+
+            <button
+              type="button"
+              onClick={handleNext}
+              className="px-6 py-2 text-sm font-medium bg-secondary-500 hover:bg-indigo-700 text-white rounded-xl transition-colors shadow-sm"
+            >
+              {currentStep === steps.length ? "Publish Agent" : "Continue"}
+            </button>
           </div>
-        )}
 
-        {currentStep === 2 && (
-          <div>
-            <h3>2. Knowledge & Data Sources</h3>
-          </div>
-        )}
+        </div>
 
-        {currentStep === 3 && (
-          <div>
-            <h3> 3. Actions & Tools</h3>
-          </div>
-        )}
-
-        {currentStep === 4 && (
-          <div>
-            <h3> 4. Channels</h3>
-          </div>
-        )}
-
-        {currentStep === 5 && (
-          <div>
-            <h3> 5. Preview & Review</h3>
-          </div>
-        )}
-      </div>
-
-      <div className="flex justify-between items-center pt-4 border-t border-slate-100">
-        <button
-          type="button"
-          onClick={handleBack}
-          disabled={currentStep === 1}
-          className={`px-5 py-2 text-sm font-medium rounded-lg border border-slate-200 transition-colors ${
-            currentStep === 1
-              ? "opacity-50 cursor-not-allowed bg-slate-50"
-              : "hover:bg-slate-50"
-          }`}
-        >
-          Back
-        </button>
-
-        <button
-          type="button"
-          onClick={handleNext}
-          className="px-6 py-2 text-sm font-medium bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors shadow-sm"
-        >
-          {currentStep === steps.length ? "Publish Agent" : "Continue"}
-        </button>
       </div>
     </div>
   );
