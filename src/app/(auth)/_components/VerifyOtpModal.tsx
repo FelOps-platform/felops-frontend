@@ -9,6 +9,7 @@ interface VerifyOtpModalProps {
   email: string;
   title?: string;
   description?: string;
+  actionText?: string;
   isVerifying?: boolean;
   error?: string;
   onVerify: (otp: string) => void;
@@ -22,6 +23,7 @@ export default function VerifyOtpModal({
   email,
   title = "Verify your email",
   description = "Enter the 6-digit code sent to",
+  actionText = "Verify Code",
   isVerifying = false,
   error,
   onVerify,
@@ -155,39 +157,39 @@ export default function VerifyOtpModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-secondary-950/80 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-secondary-950/70 backdrop-blur-sm p-4 animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget && !isVerifying) {
           onClose();
         }
       }}
     >
-      <div className="w-full max-w-md bg-secondary-950 border border-secondary-50/20 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
+      <div className="w-full max-w-md bg-neutral-50 border border-neutral-200 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
         <button
           type="button"
           onClick={onClose}
           disabled={isVerifying}
           aria-label="Close modal"
-          className="absolute top-5 right-5 text-neutral-400 hover:text-secondary-50 p-1.5 rounded-lg hover:bg-neutral-800/40 transition-colors disabled:opacity-50"
+          className="absolute top-5 right-5 text-neutral-400 hover:text-neutral-800 p-1.5 rounded-lg hover:bg-neutral-200/60 transition-colors disabled:opacity-50"
         >
           <X className="w-5 h-5" />
         </button>
 
         <div className="text-center mb-6">
-          <h2 className="text-xl sm:text-2xl font-bold text-secondary-50 tracking-tight mb-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 tracking-tight mb-2">
             {title}
           </h2>
-          <p className="text-xs sm:text-sm text-neutral-400">
+          <p className="text-xs sm:text-sm text-neutral-600">
             {description}{" "}
-            <span className="text-secondary-50 font-medium break-all">
+            <span className="text-neutral-900 font-semibold break-all">
               {email}
             </span>
           </p>
         </div>
 
         {error && (
-          <div className="mb-5 p-3 rounded-xl bg-wrong-500/10 border border-wrong-500/20 text-wrong-400 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+          <div className="mb-5 p-3 rounded-xl bg-wrong-50 border border-wrong-200 text-wrong-700 text-xs flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 text-wrong-500" />
             <span>{error}</span>
           </div>
         )}
@@ -211,11 +213,10 @@ export default function VerifyOtpModal({
                 value={digit}
                 onChange={(e) => handleChange(e.target.value, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
-                className={`w-11 h-14 text-center text-lg font-bold rounded-xl transition-all disabled:opacity-50 ${
-                  error
-                    ? "bg-neutral-900/40 border border-wrong-500/80 text-wrong-400 focus:outline-none focus:border-wrong-500"
-                    : "bg-neutral-900/40 border border-neutral-800 text-secondary-50 focus:outline-none focus:border-secondary-50"
-                }`}
+                className={`w-11 h-14 text-center text-lg font-bold rounded-xl transition-all disabled:opacity-50 ${error
+                    ? "bg-wrong-50/40 border border-wrong-500 text-wrong-700 focus:outline-none focus:ring-2 focus:ring-wrong-500/20"
+                    : "bg-white border border-neutral-300 text-neutral-900 focus:outline-none focus:border-secondary-500 focus:ring-2 focus:ring-secondary-500/20"
+                  }`}
               />
             ))}
           </div>
@@ -223,7 +224,7 @@ export default function VerifyOtpModal({
           <button
             type="submit"
             disabled={!isComplete || isVerifying}
-            className="w-full py-3.5 px-4 rounded-xl bg-secondary-50 text-secondary-950 font-semibold text-sm hover:bg-secondary-100 transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-3.5 px-4 rounded-xl bg-secondary-500 text-white font-semibold text-sm hover:bg-secondary-600 transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isVerifying ? (
               <>
@@ -231,23 +232,22 @@ export default function VerifyOtpModal({
                 <span>Verifying...</span>
               </>
             ) : (
-              <span>Verify Code</span>
+              <span>{actionText}</span>
             )}
           </button>
         </form>
 
-        <div className="mt-6 text-center text-xs text-neutral-400 space-y-2">
+        <div className="mt-6 text-center text-xs text-neutral-600 space-y-2">
           <p>
             Didn't receive it?{" "}
             <button
               type="button"
               disabled={timeLeft > 0 || isVerifying}
               onClick={handleResendClick}
-              className={`font-medium transition-colors ${
-                timeLeft > 0 || isVerifying
-                  ? "text-neutral-600 cursor-not-allowed"
-                  : "text-secondary-50 hover:text-neutral-50 hover:underline cursor-pointer"
-              }`}
+              className={`font-semibold transition-colors ${timeLeft > 0 || isVerifying
+                  ? "text-neutral-400 cursor-not-allowed"
+                  : "text-secondary-500 hover:text-secondary-600 hover:underline cursor-pointer"
+                }`}
             >
               Resend code
             </button>
