@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Check, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useForm, FormProvider } from "react-hook-form";
+import { BasicInfoStep } from "./BasicInfoStep";
 
 const steps = [
   { id: 1, title: "Basic information", description: "Name and instructions" },
@@ -20,18 +22,42 @@ export function AgentStepperForm({ workspaceId }: AgentStepperFormProps) {
   const params = useParams();
   const activeWorkspaceId = workspaceId || (params?.workspaceId as string) || "";
   const [currentStep, setCurrentStep] = useState(1);
-  const handleNext = () => {
-    if (currentStep < steps.length) {
+
+  const methods = useForm({
+    mode: "onSubmit",
+    reValidateMode: "onChange",
+    defaultValues: {
+      name: "",
+      instructions: "",
+    },
+  });
+
+  const handleNext = async () => {
+    let isValid = false;
+
+    if (currentStep === 1) {
+      isValid = await methods.trigger(["name", "instructions"]);
+    } else {
+      isValid = true;
+    }
+
+    if (isValid && currentStep < 4) {
       setCurrentStep((prev) => prev + 1);
     }
   };
-
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep((prev) => prev - 1);
     }
   };
 
+  const onSubmit = async (data: any) => {
+    try {
+      // TODO: Send agent data to backend 
+      console.log("Form data ready for submission:", data);
+    } catch (error) {
+    }
+  };
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="flex justify-between items-center mb-10">
@@ -84,99 +110,82 @@ export function AgentStepperForm({ workspaceId }: AgentStepperFormProps) {
           })}
         </div>
 
-        {/* Card */}
-        <div className="lg:col-span-8 bg-neutral-50 border border-slate-200/80 rounded-2xl p-8 shadow-sm">
+        <FormProvider {...methods}>
 
-          {/* Step 1: Basic Information */}
-          {currentStep === 1 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-secondary-950">Basic information</h2>
-                <p className="text-sm text-secondary-200 mt-1">
-                  Give the Agent a clear name and describe how it should work.
-                </p>
-              </div>
+          {/* Card */}
+            <div className="lg:col-span-8 bg-neutral-50 border border-neutral-200/80 rounded-2xl p-6 sm:p-8 shadow-xs">
+              <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6">
 
-              {/* <div className="space-y-2">
-                <label className="block text-sm font-semibold text-slate-900">Agent name</label>
-                <input
-                  type="text"
-                  value={agentName}
-                  onChange={(e) => setAgentName(e.target.value)}
-                  placeholder="For example, Customer onboarding"
-                  className="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all text-slate-900 placeholder:text-slate-400"
-                />
-                <p className="text-xs text-slate-500">Use a name that reflects the business work this Agent supports.</p>
-              </div>
+                {/* Step 1: Basic Information */}
+                {currentStep === 1 && <BasicInfoStep />}
 
-              <div className="space-y-2">
-                <label className="block text-sm font-semibold text-slate-900">Instructions</label>
-                <textarea
-                  rows={5}
-                  value={agentInstructions}
-                  onChange={(e) => setAgentInstructions(e.target.value)}
-                  placeholder="Describe the Agent's responsibilities, expected behavior, constraints, and when it should ask for clarification."
-                  className="w-full px-4 py-3 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all text-slate-900 placeholder:text-slate-400 resize-none"
-                />
-                <p className="text-xs text-slate-500">Be specific about responsibilities, boundaries, and working preferences.</p>
-              </div> */}
+                {/* Step 2: Assign Actions */}
+                {currentStep === 2 && (
+                  <div className="space-y-6">
+                    <div>
+                      <h2 className="text-lg font-semibold text-secondary-950">Assign Workspace Actions</h2>
+                      <p className="text-sm text-secondary-200 mt-1">Choose which available Actions this Agent may request. Policies still apply at execution time.</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 3: Configure Knowledge */}
+                {currentStep === 3 && (
+                  <div className="space-y-6">
+                    <div>
+                      <h2 className="text-lg font-semibold text-secondary-950">Configure Knowledge</h2>
+                      <p className="text-sm text-secondary-200 mt-1">Select existing Knowledge sources from your Workspace to make them available to this Agent.</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 4: Review & Save */}
+                {currentStep === 4 && (
+                  <div className="space-y-6">
+                    <div>
+                      <h2 className="text-lg font-semibold text-secondary-950">Review & save</h2>
+                      <p className="text-sm text-secondary-200 mt-1">Confirm configuration and publish your new agent.</p>
+                    </div>
+                  </div>
+                )}
+
+                {/*  (Back / Continue) */}
+                <div className="flex justify-between items-center pt-6 mt-8 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    disabled={currentStep === 1}
+                    className={`px-5 py-2 text-sm font-medium rounded-xl border border-slate-200 transition-colors ${currentStep === 1
+                      ? "opacity-40 cursor-not-allowed bg-slate-50 text-slate-400"
+                      : "hover:bg-slate-50 text-slate-700 bg-white"
+                      }`}
+                  >
+                    Back
+                  </button>
+
+                  {currentStep < 4 ? (
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      className="px-6 py-2.5 text-sm font-medium bg-secondary-500 text-white rounded-xl hover:bg-secondary-600 transition-colors"
+                    >
+                      Continue
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      className="px-6 py-2.5 text-sm font-medium bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors"
+                    >
+                      Publish Agent
+                    </button>
+                  )}
+                </div>
+
+              </form>
             </div>
-          )}
 
-          {/* Step 2: Assign Actions */}
-          {currentStep === 2 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-secondary-950">Assign Workspace Actions</h2>
-                <p className="text-sm text-secondary-200 mt-1">Choose which available Actions this Agent may request. Policies still apply at execution time.</p>
-              </div>
-            </div>
-          )}
+        </FormProvider>
 
-          {/* Step 3: Configure Knowledge */}
-          {currentStep === 3 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-secondary-950">Configure Knowledge</h2>
-                <p className="text-sm text-secondary-200 mt-1">Select existing Knowledge sources from your Workspace to make them available to this Agent.</p>
-              </div>
-            </div>
-          )}
-
-          {/* Step 4: Review & Save */}
-          {currentStep === 4 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-secondary-950">Review & save</h2>
-                <p className="text-sm text-secondary-200 mt-1">Confirm configuration and publish your new agent.</p>
-              </div>
-            </div>
-          )}
-
-          {/*  (Back / Continue) */}
-          <div className="flex justify-between items-center pt-6 mt-8 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={handleBack}
-              disabled={currentStep === 1}
-              className={`px-5 py-2 text-sm font-medium rounded-xl border border-slate-200 transition-colors ${currentStep === 1
-                ? "opacity-40 cursor-not-allowed bg-slate-50 text-slate-400"
-                : "hover:bg-slate-50 text-slate-700 bg-white"
-                }`}
-            >
-              Back
-            </button>
-
-            <button
-              type="button"
-              onClick={handleNext}
-              className="px-6 py-2 text-sm font-medium bg-secondary-500 hover:bg-indigo-700 text-white rounded-xl transition-colors shadow-sm"
-            >
-              {currentStep === steps.length ? "Publish Agent" : "Continue"}
-            </button>
-          </div>
-
-        </div>
 
       </div>
     </div>
