@@ -1,7 +1,8 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
-export default async function AgentsPage({
+async function AgentsContent({
   params,
 }: {
   params: Promise<{ workspaceId: string }>;
@@ -30,5 +31,17 @@ export default async function AgentsPage({
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function AgentsPage({
+  params,
+}: {
+  params: Promise<{ workspaceId: string }>;
+}) {
+  return (
+    <Suspense fallback={<div className="space-y-6 max-w-6xl animate-pulse" />}>
+      <AgentsContent params={params} />
+    </Suspense>
   );
 }

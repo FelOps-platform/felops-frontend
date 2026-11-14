@@ -34,7 +34,7 @@ export function BasicInfoStep() {
                             validate: (val) =>
                                 val?.trim().length > 0 || "Enter a name for this Agent.",
                         })}
-                        className={`w-full px-4 py-2.5 text-sm  text-neutral-900 border rounded-xl placeholder:text-neutral-400 transition-all ${errors.name
+                        className={`w-full px-4 py-2.5 text-sm bg-white text-neutral-900 border rounded-xl placeholder:text-neutral-400 transition-all ${errors.name
                             ? "border-wrong-500 bg-wrong-50/20 focus:border-wrong-500 focus:ring-2 focus:ring-wrong-500/20 focus:outline-none"
                             : "border-neutral-300 hover:border-neutral-400 focus:border-secondary-500 focus:ring-2 focus:ring-secondary-500/20 focus:outline-none"
                             }`}
@@ -59,7 +59,7 @@ export function BasicInfoStep() {
                             validate: (val) =>
                                 val?.trim().length > 0 || "Instructions cannot be empty.",
                         })}
-                        className={`w-full px-4 py-3 text-sm  text-neutral-900 border rounded-xl placeholder:text-neutral-400 resize-none leading-relaxed transition-all ${errors.instructions
+                        className={`w-full px-4 py-3 text-sm bg-white text-neutral-900 border rounded-xl placeholder:text-neutral-400 resize-none leading-relaxed transition-all ${errors.instructions
                             ? "border-wrong-500 bg-wrong-50/20 focus:border-wrong-500 focus:ring-2 focus:ring-wrong-500/20 focus:outline-none"
                             : "border-neutral-300 hover:border-neutral-400 focus:border-secondary-500 focus:ring-2 focus:ring-secondary-500/20 focus:outline-none"
                             }`}
