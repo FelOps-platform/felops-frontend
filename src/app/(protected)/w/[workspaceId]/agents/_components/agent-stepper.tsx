@@ -1,29 +1,48 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Check,
-  ChevronRight,
-  FileText,
-  Cpu,
-  ShieldCheck,
-  Sliders,
-  Eye,
-} from "lucide-react";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-const steps = [
-  { id: 1, title: "Name & Instructions", description: "Basic information" },
-  { id: 2, title: "Knowledge", description: "Connect data sources" },
-  { id: 3, title: "Actions", description: "Setup tools & APIs" },
-  { id: 4, title: "Channels", description: "Deploy endpoints" },
-  { id: 5, title: "Preview & Review", description: "Final checks" },
-];
+import { STEPS, agentFormSchema, type AgentFormData } from "./agent-form.schema";
+import { StepperProgress } from "./stepper-progress";
+import { StepperNavigation } from "./stepper-navigation";
+import { BasicInfoStep } from "./steps/BasicInfoStep";
+import { ActionsStep } from "./steps/ActionsStep";
+import { KnowledgeStep } from "./steps/KnowledgeStep";
+import { ReviewStep } from "./steps/ReviewStep";
 
-export function AgentStepperForm() {
+export interface AgentStepperFormProps {
+  workspaceId: string;
+}
+
+export function AgentStepperForm({ workspaceId }: AgentStepperFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleNext = () => {
-    if (currentStep < steps.length) {
+  const methods = useForm<AgentFormData>({
+    resolver: zodResolver(agentFormSchema),
+    mode: "onSubmit",
+    reValidateMode: "onSubmit",
+    defaultValues: {
+      name: "",
+      instructions: "",
+      actionIds: [],
+      knowledgeIds: [],
+    },
+  });
+
+  const handleNext = async () => {
+    const currentStepConfig = STEPS.find((step) => step.id === currentStep);
+
+    if (currentStepConfig?.fields && currentStepConfig.fields.length > 0) {
+      const isValid = await methods.trigger(currentStepConfig.fields);
+      if (!isValid) return;
+    }
+
+    if (currentStep < STEPS.length) {
       setCurrentStep((prev) => prev + 1);
     }
   };
@@ -34,119 +53,103 @@ export function AgentStepperForm() {
     }
   };
 
+  const handleStepClick = (stepId: number) => {
+    if (stepId < currentStep) {
+      setCurrentStep(stepId);
+    }
+  };
+
+  const onSubmit = async (data: AgentFormData) => {
+    try {
+      setIsSubmitting(true);
+      // TODO: Submit agent payload to API endpoint
+      console.log("Agent creation payload ready for submission:", data);
+    } catch (error) {
+      console.error("Failed to create agent:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return <BasicInfoStep />;
+      case 2:
+        return <ActionsStep workspaceId={workspaceId} />;
+      case 3:
+        return <KnowledgeStep />;
+      case 4:
+        return <ReviewStep />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Create agent</h1>
-          <p className="text-sm text-slate-500">
-            Step {currentStep} of {steps.length} —{" "}
-            {steps[currentStep - 1].title}.
-          </p>
+    <div className="max-w-6xl mx-auto p-4">
+      {/* Header with Breadcrumb & Step Info */}
+      <div className="flex justify-between items-center mb-8 pb-5">
+        <div className="flex items-center gap-3.5">
+          <Link
+            href={`/w/${workspaceId}/agents`}
+            className="w-10 h-10 rounded-xl border border-slate-200/80 bg-white flex items-center justify-center text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all shadow-xs"
+            title="Back to Agents"
+          >
+            <ChevronLeft className="w-5 h-5" strokeWidth={7} />
+          </Link>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold text-secondary-50 tracking-tight">
+              Create New Agent
+            </h1>
+            <p className="text-xs text-neutral-400 mt-0.5">
+              Step {currentStep} of {STEPS.length} —{" "}
+              {STEPS[currentStep - 1]?.title}
+            </p>
+          </div>
         </div>
-        <button
-          type="button"
-          className="px-4 py-2 text-sm font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-        >
-          Save draft
-        </button>
       </div>
 
-      <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-6 overflow-x-auto">
-        {steps.map((step, index) => {
-          const isCompleted = currentStep > step.id;
-          const isCurrent = currentStep === step.id;
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left Sidebar: Step Tracker */}
+        <div className="lg:col-span-4">
+          <StepperProgress
+            steps={STEPS}
+            currentStep={currentStep}
+            onStepClick={handleStepClick}
+          />
+        </div>
 
-          return (
-            <div
-              key={step.id}
-              className="flex items-center gap-3 flex-1 min-w-[180px]"
+        {/* Right Content Card Container */}
+        <FormProvider {...methods}>
+          <div className="lg:col-span-8 bg-neutral-50 border border-neutral-50 rounded-2xl p-6 sm:p-8 shadow-xs">
+            <form
+              onSubmit={(e) => {
+                if (currentStep < STEPS.length) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  return;
+                }
+                methods.handleSubmit(onSubmit)(e);
+              }}
             >
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all ${
-                  isCompleted
-                    ? "bg-slate-900 text-white"
-                    : isCurrent
-                      ? "bg-orange-600 text-white shadow-md shadow-orange-600/20"
-                      : "bg-slate-100 text-slate-400"
-                }`}
-              >
-                {isCompleted ? <Check className="w-5 h-5" /> : step.id}
-              </div>
+              {/* Active Step Content */}
+              {renderStepContent()}
 
-              <div className="flex flex-col">
-                <span
-                  className={`text-sm font-medium ${isCurrent ? "text-slate-900" : "text-slate-500"}`}
-                >
-                  {step.title}
-                </span>
-                <span className="text-xs text-slate-400">
-                  {step.description}
-                </span>
-              </div>
-
-              {index < steps.length - 1 && (
-                <ChevronRight className="w-4 h-4 text-slate-300 mx-auto hidden md:block" />
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="min-h-[300px] mb-8">
-        {currentStep === 1 && (
-          <div>
-            <h3>1. Name & Instructions</h3>
+              {/* Navigation Action Buttons */}
+              <StepperNavigation
+                currentStep={currentStep}
+                totalSteps={STEPS.length}
+                onBack={handleBack}
+                onNext={handleNext}
+                isSubmitting={isSubmitting}
+              />
+            </form>
           </div>
-        )}
-
-        {currentStep === 2 && (
-          <div>
-            <h3>2. Knowledge & Data Sources</h3>
-          </div>
-        )}
-
-        {currentStep === 3 && (
-          <div>
-            <h3> 3. Actions & Tools</h3>
-          </div>
-        )}
-
-        {currentStep === 4 && (
-          <div>
-            <h3> 4. Channels</h3>
-          </div>
-        )}
-
-        {currentStep === 5 && (
-          <div>
-            <h3> 5. Preview & Review</h3>
-          </div>
-        )}
-      </div>
-
-      <div className="flex justify-between items-center pt-4 border-t border-slate-100">
-        <button
-          type="button"
-          onClick={handleBack}
-          disabled={currentStep === 1}
-          className={`px-5 py-2 text-sm font-medium rounded-lg border border-slate-200 transition-colors ${
-            currentStep === 1
-              ? "opacity-50 cursor-not-allowed bg-slate-50"
-              : "hover:bg-slate-50"
-          }`}
-        >
-          Back
-        </button>
-
-        <button
-          type="button"
-          onClick={handleNext}
-          className="px-6 py-2 text-sm font-medium bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors shadow-sm"
-        >
-          {currentStep === steps.length ? "Publish Agent" : "Continue"}
-        </button>
+        </FormProvider>
       </div>
     </div>
   );
 }
+
+export default AgentStepperForm;
