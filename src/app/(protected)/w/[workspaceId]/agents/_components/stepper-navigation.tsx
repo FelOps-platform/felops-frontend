@@ -37,8 +37,12 @@ export function StepperNavigation({
       {/* Next / Submit Button */}
       {!isLastStep ? (
         <button
+          key="stepper-continue-btn"
           type="button"
-          onClick={onNext}
+          onClick={(e) => {
+            e.preventDefault();
+            onNext();
+          }}
           disabled={isSubmitting}
           className="px-6 py-2.5 text-sm font-semibold bg-secondary-500 text-white rounded-xl hover:bg-secondary-600 transition-all shadow-sm hover:shadow-md active:scale-[0.99] cursor-pointer"
         >
@@ -46,6 +50,7 @@ export function StepperNavigation({
         </button>
       ) : (
         <button
+          key="stepper-submit-btn"
           type="submit"
           disabled={isSubmitting}
           className="px-6 py-2.5 text-sm font-semibold bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all shadow-sm hover:shadow-md active:scale-[0.99] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"

@@ -123,7 +123,16 @@ export function AgentStepperForm({ workspaceId }: AgentStepperFormProps) {
         {/* Right Content Card Container */}
         <FormProvider {...methods}>
           <div className="lg:col-span-8 bg-neutral-50 border border-neutral-50 rounded-2xl p-6 sm:p-8 shadow-xs">
-            <form onSubmit={methods.handleSubmit(onSubmit)}>
+            <form
+              onSubmit={(e) => {
+                if (currentStep < STEPS.length) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  return;
+                }
+                methods.handleSubmit(onSubmit)(e);
+              }}
+            >
               {/* Active Step Content */}
               {renderStepContent()}
 

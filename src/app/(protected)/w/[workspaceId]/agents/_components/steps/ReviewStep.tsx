@@ -53,7 +53,7 @@ export function ReviewStep() {
         </div>
 
         {/* Workspace Actions Summary */}
-        <div className="p-5 rounded-2xl border border-neutral-200 bg-white shadow-2xs">
+        <div className="p-5 rounded-2xl border border-neutral-200 bg-white shadow-2xs space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <Zap className="w-5 h-5 text-secondary-500" />
@@ -67,6 +67,20 @@ export function ReviewStep() {
               </div>
             </div>
           </div>
+
+          {values.actionIds && values.actionIds.length > 0 && (
+            <div className="flex flex-wrap gap-2 pt-2 border-t border-neutral-100 max-h-36 overflow-y-auto pr-1">
+              {values.actionIds.map((id) => (
+                <span
+                  key={id}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-neutral-100 text-neutral-800 border border-neutral-200 capitalize"
+                >
+                  <Zap className="w-3 h-3 text-secondary-500" />
+                  {id.replace("act_", "").replace(/_/g, " ")}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Knowledge Sources Summary */}
