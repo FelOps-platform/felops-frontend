@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bot, ExternalLink } from "lucide-react";
+import { Bot } from "lucide-react";
 
 interface ActionsStepProps {
   workspaceId: string;
