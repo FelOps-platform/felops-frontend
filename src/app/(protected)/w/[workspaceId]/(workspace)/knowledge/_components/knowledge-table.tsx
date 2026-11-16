@@ -1,17 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import {
-  FileText,
-  Globe,
   Database,
-  FileCode,
   Plus,
   MoreHorizontal,
   Trash2,
   Shield,
 } from "lucide-react";
 import type { KnowledgeItem } from "../services/knowledge.service";
+import { useKnowledgeTable } from "../hooks/use-knowledge-table";
 
 interface KnowledgeTableProps {
   items: KnowledgeItem[];
@@ -19,64 +16,21 @@ interface KnowledgeTableProps {
   onRemoveItem?: (id: string) => void;
 }
 
-function getTypeIcon(type: string) {
-  switch (type.toLowerCase()) {
-    case "pdf":
-      return <FileText className="w-4 h-4 text-secondary-50" />;
-    case "website":
-      return <Globe className="w-4 h-4 text-secondary-50" />;
-    default:
-      return <FileCode className="w-4 h-4 text-secondary-50" />;
-  }
-}
-
-function getAvailabilityBadge(status: string = "ready") {
-  const normalizedStatus = status.toLowerCase();
-  const config = {
-    ready: {
-      label: "Ready",
-      bg: "bg-right-100 text-right-950 border-right-400",
-    },
-    processing: {
-      label: "Processing",
-      bg: "bg-secondary2-200 text-secondary2-950 border-secondary2-400",
-    },
-    failed: {
-      label: "Failed",
-      bg: "bg-wrong-200 text-wrong-950 border-wrong-400",
-    },
-  }[normalizedStatus] || {
-    label: status,
-    bg: "bg-neutral-300/80 text-secondary-950 border-neutral-400/50",
-  };
-
-  return (
-    <span className={` items-center gap-1.5 px-1.5 py-1 rounded-xl  font-semibold border ${config.bg}`}>
-      <span className={`w-1.5 h-1.5`} />
-      {config.label}
-    </span>
-  );
-}
-
-function formatDate(dateStr: string) {
-  try {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  } catch {
-    return dateStr;
-  }
-}
-
 export function KnowledgeTable({
   items,
   onAddKnowledge,
   onRemoveItem,
 }: KnowledgeTableProps) {
-  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const {
+    activeMenuId,
+    toggleMenu,
+    closeMenu,
+    handleRemove,
+    isNearBottom,
+    getTypeIcon,
+    getAvailabilityBadge,
+    formatDate,
+  } = useKnowledgeTable({ items, onRemoveItem });
 
   if (items.length === 0) {
     return (
@@ -105,9 +59,9 @@ export function KnowledgeTable({
     <div className="rounded-2xl relative overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left min-w-[600px]">
-          <thead className="bg-secondary-50 ">
-            <tr className="  text-neutral-700 ">
-              <th scope="col" className="px-5 py-3.5 ">
+          <thead className="bg-secondary-50">
+            <tr className="text-neutral-700">
+              <th scope="col" className="px-5 py-3.5">
                 Source name
               </th>
               <th scope="col" className="px-5 py-3.5">
@@ -127,7 +81,8 @@ export function KnowledgeTable({
           <tbody className="divide-y divide-neutral-200 text-xs sm:text-sm bg-neutral-50">
             {items.map((item, index) => {
               const isMenuOpen = activeMenuId === item.id;
-              const isNearBottom = index >= items.length - 2 && items.length > 2;
+              const nearBottom = isNearBottom(index);
+
               return (
                 <tr
                   key={item.id}
@@ -145,7 +100,7 @@ export function KnowledgeTable({
 
                   {/* Type */}
                   <td className="px-5 py-4">
-                    <span className="inline-flex items-center px-2.5 py-1   ">
+                    <span className="inline-flex items-center px-2.5 py-1">
                       {item.type}
                     </span>
                   </td>
@@ -156,7 +111,7 @@ export function KnowledgeTable({
                   </td>
 
                   {/* Created At */}
-                  <td className="px-5 py-4 ">
+                  <td className="px-5 py-4">
                     {formatDate(item.createdAt)}
                   </td>
 
@@ -164,11 +119,9 @@ export function KnowledgeTable({
                   <td className="px-5 py-4 text-end relative">
                     <button
                       type="button"
-                      onClick={() =>
-                        setActiveMenuId(isMenuOpen ? null : item.id)
-                      }
+                      onClick={() => toggleMenu(item.id)}
                       aria-label="Actions"
-                      className="p-1.5 rounded-lg text-secondary-950 hover:bg-neutral-300/80 transition-colors cursor-pointer inline-flex items-center justify-center "
+                      className="p-1.5 rounded-lg text-secondary-950 hover:bg-neutral-300/80 transition-colors cursor-pointer inline-flex items-center justify-center"
                     >
                       <MoreHorizontal className="w-5 h-5" />
                     </button>
@@ -179,19 +132,18 @@ export function KnowledgeTable({
                         {/* Backdrop to close menu on click outside */}
                         <div
                           className="fixed inset-0 z-40"
-                          onClick={() => setActiveMenuId(null)}
+                          onClick={closeMenu}
                         />
 
                         <div
-                          className={`absolute end-5 z-50 w-52 rounded-xl bg-neutral-50 p-1.5  border border-neutral-300 text-secondary-950 ${isNearBottom ? "bottom-11" : "top-11"
-                            }`}
+                          className={`absolute end-5 z-50 w-52 rounded-xl bg-neutral-50 p-1.5 border border-neutral-300 text-secondary-950 ${
+                            nearBottom ? "bottom-11" : "top-11"
+                          }`}
                         >
-                          {/* Toggle Availability Action */}
+                          {/* Availability Action */}
                           <button
                             type="button"
-                            onClick={() => {
-                              setActiveMenuId(null);
-                            }}
+                            onClick={closeMenu}
                             className="w-full flex items-center justify-between gap-2.5 px-3 py-2 text-xs font-medium text-secondary-950 hover:bg-neutral-200/80 rounded-lg transition-colors cursor-pointer text-left"
                           >
                             <span className="flex items-center gap-2">
@@ -206,10 +158,7 @@ export function KnowledgeTable({
                           {/* Remove Item Action */}
                           <button
                             type="button"
-                            onClick={() => {
-                              onRemoveItem?.(item.id);
-                              setActiveMenuId(null);
-                            }}
+                            onClick={() => handleRemove(item.id)}
                             className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-wrong-600 hover:bg-wrong-50 rounded-lg transition-colors cursor-pointer text-left"
                           >
                             <Trash2 className="w-3.5 h-3.5 text-wrong-600" />
@@ -225,7 +174,7 @@ export function KnowledgeTable({
           </tbody>
         </table>
       </div>
-    </div >
+    </div>
   );
 }
 
