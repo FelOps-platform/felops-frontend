@@ -3,10 +3,18 @@
 import { useState } from "react";
 import { FileText, Globe, FileCode } from "lucide-react";
 import type { KnowledgeItem } from "../services/knowledge.service";
+import type { KnowledgeModalType } from "../_components/KnowledgeActionModal";
 
 interface UseKnowledgeTableProps {
   items: KnowledgeItem[];
-  onRemoveItem?: (id: string) => void;
+  onRemoveItem?: (id: string) => void | Promise<void>;
+  onRetryProcessing?: (id: string) => void | Promise<void>;
+}
+
+export interface ModalState {
+  isOpen: boolean;
+  type: KnowledgeModalType;
+  selectedItem: KnowledgeItem | null;
 }
 
 export function getTypeIcon(type: string) {
@@ -21,7 +29,14 @@ export function getTypeIcon(type: string) {
 }
 
 export function getAvailabilityBadge(status: string = "ready") {
-  const normalizedStatus = status.toLowerCase();
+  const normalized = status.toLowerCase();
+  const key =
+    normalized === "indexed"
+      ? "ready"
+      : normalized === "syncing"
+      ? "processing"
+      : normalized;
+
   const config = {
     ready: {
       label: "Ready",
@@ -35,16 +50,15 @@ export function getAvailabilityBadge(status: string = "ready") {
       label: "Failed",
       bg: "bg-wrong-200 text-wrong-950 border-wrong-400",
     },
-  }[normalizedStatus] || {
+  }[key] || {
     label: status,
     bg: "bg-neutral-300/80 text-secondary-950 border-neutral-400/50",
   };
 
   return (
     <span
-      className={`items-center gap-1.5 px-1.5 py-1 rounded-xl font-semibold border ${config.bg}`}
+      className={`inline-flex items-center px-2 py-1 rounded-xl text-xs font-semibold border ${config.bg}`}
     >
-      <span className="w-1.5 h-1.5" />
       {config.label}
     </span>
   );
@@ -66,8 +80,14 @@ export function formatDate(dateStr: string) {
 export function useKnowledgeTable({
   items,
   onRemoveItem,
+  onRetryProcessing,
 }: UseKnowledgeTableProps) {
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const [modalState, setModalState] = useState<ModalState>({
+    isOpen: false,
+    type: "available",
+    selectedItem: null,
+  });
 
   const toggleMenu = (id: string) => {
     setActiveMenuId((prev) => (prev === id ? null : id));
@@ -77,9 +97,53 @@ export function useKnowledgeTable({
     setActiveMenuId(null);
   };
 
-  const handleRemove = (id: string) => {
-    onRemoveItem?.(id);
+  const openAvailabilityModal = (item: KnowledgeItem) => {
     closeMenu();
+    const s = item.status.toLowerCase();
+    const type: KnowledgeModalType =
+      s === "failed" || s === "unavailable"
+        ? "unavailable"
+        : s === "processing" || s === "syncing"
+        ? "processing"
+        : "available";
+
+    setModalState({
+      isOpen: true,
+      type,
+      selectedItem: item,
+    });
+  };
+
+  const openRemoveModal = (item: KnowledgeItem) => {
+    closeMenu();
+    setModalState({
+      isOpen: true,
+      type: "remove_confirm",
+      selectedItem: item,
+    });
+  };
+
+  const closeModal = () => {
+    setModalState((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  const handleModalRemoveSource = () => {
+    if (modalState.type !== "remove_confirm") {
+      setModalState((prev) => ({ ...prev, type: "remove_confirm" }));
+      return;
+    }
+
+    if (modalState.selectedItem) {
+      onRemoveItem?.(modalState.selectedItem.id);
+    }
+    closeModal();
+  };
+
+  const handleRetryProcessing = () => {
+    if (modalState.selectedItem) {
+      onRetryProcessing?.(modalState.selectedItem.id);
+    }
+    closeModal();
   };
 
   const isNearBottom = (index: number) => {
@@ -90,7 +154,12 @@ export function useKnowledgeTable({
     activeMenuId,
     toggleMenu,
     closeMenu,
-    handleRemove,
+    modalState,
+    openAvailabilityModal,
+    openRemoveModal,
+    closeModal,
+    handleModalRemoveSource,
+    handleRetryProcessing,
     isNearBottom,
     getTypeIcon,
     getAvailabilityBadge,

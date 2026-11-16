@@ -9,28 +9,36 @@ import {
 } from "lucide-react";
 import type { KnowledgeItem } from "../services/knowledge.service";
 import { useKnowledgeTable } from "../hooks/use-knowledge-table";
+import { KnowledgeActionModal } from "./KnowledgeActionModal";
 
 interface KnowledgeTableProps {
   items: KnowledgeItem[];
   onAddKnowledge?: () => void;
-  onRemoveItem?: (id: string) => void;
+  onRemoveItem?: (id: string) => void | Promise<void>;
+  onRetryProcessing?: (id: string) => void | Promise<void>;
 }
 
 export function KnowledgeTable({
   items,
   onAddKnowledge,
   onRemoveItem,
+  onRetryProcessing,
 }: KnowledgeTableProps) {
   const {
     activeMenuId,
     toggleMenu,
     closeMenu,
-    handleRemove,
+    modalState,
+    openAvailabilityModal,
+    openRemoveModal,
+    closeModal,
+    handleModalRemoveSource,
+    handleRetryProcessing,
     isNearBottom,
     getTypeIcon,
     getAvailabilityBadge,
     formatDate,
-  } = useKnowledgeTable({ items, onRemoveItem });
+  } = useKnowledgeTable({ items, onRemoveItem, onRetryProcessing });
 
   if (items.length === 0) {
     return (
@@ -105,9 +113,16 @@ export function KnowledgeTable({
                     </span>
                   </td>
 
-                  {/* Availability */}
+                  {/* Availability Badge */}
                   <td className="px-5 py-4">
-                    {getAvailabilityBadge(item.status)}
+                    <button
+                      type="button"
+                      onClick={() => openAvailabilityModal(item)}
+                      className="cursor-pointer hover:opacity-80 transition-opacity inline-flex focus:outline-none"
+                      title="View availability details"
+                    >
+                      {getAvailabilityBadge(item.status)}
+                    </button>
                   </td>
 
                   {/* Created At */}
@@ -143,13 +158,11 @@ export function KnowledgeTable({
                           {/* Availability Action */}
                           <button
                             type="button"
-                            onClick={closeMenu}
-                            className="w-full flex items-center justify-between gap-2.5 px-3 py-2 text-xs font-medium text-secondary-950 hover:bg-neutral-200/80 rounded-lg transition-colors cursor-pointer text-left"
+                            onClick={() => openAvailabilityModal(item)}
+                            className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-secondary-950 hover:bg-neutral-200/80 rounded-lg transition-colors cursor-pointer text-left"
                           >
-                            <span className="flex items-center gap-2">
-                              <Shield className="w-3.5 h-3.5 text-secondary-700" />
-                              <span>Availability</span>
-                            </span>
+                            <Shield className="w-3.5 h-3.5 text-secondary-700" />
+                            <span>Availability</span>
                           </button>
 
                           {/* Divider */}
@@ -158,7 +171,7 @@ export function KnowledgeTable({
                           {/* Remove Item Action */}
                           <button
                             type="button"
-                            onClick={() => handleRemove(item.id)}
+                            onClick={() => openRemoveModal(item)}
                             className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-wrong-600 hover:bg-wrong-50 rounded-lg transition-colors cursor-pointer text-left"
                           >
                             <Trash2 className="w-3.5 h-3.5 text-wrong-600" />
@@ -174,6 +187,16 @@ export function KnowledgeTable({
           </tbody>
         </table>
       </div>
+
+      {/* Reusable Knowledge Action Modal */}
+      <KnowledgeActionModal
+        isOpen={modalState.isOpen}
+        type={modalState.type}
+        assignedAgents={modalState.selectedItem?.assignedAgents}
+        onClose={closeModal}
+        onRemoveSource={handleModalRemoveSource}
+        onRetryProcessing={handleRetryProcessing}
+      />
     </div>
   );
 }
