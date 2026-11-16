@@ -1,12 +1,6 @@
-export interface KnowledgeItem {
-  id: string;
-  name: string;
-  type: string;
-  source: string;
-  status: string;
-  assignedAgents?: string[];
-  createdAt: string;
-}
+import type { KnowledgeItem } from "../types/knowledge.types";
+
+export type { KnowledgeItem };
 
 // ---------------------------------------------------------------------------
 // Mock Data Simulating Backend Workspace Knowledge Items
