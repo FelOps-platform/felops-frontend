@@ -2,19 +2,16 @@
 
 import { useState, useMemo } from "react";
 import { FileText, Globe, FileCode } from "lucide-react";
-import type { KnowledgeItem } from "../services/knowledge.service";
-import type { KnowledgeModalType } from "../_components/KnowledgeActionModal";
+import type {
+  KnowledgeItem,
+  KnowledgeModalType,
+  ModalState,
+} from "../types/knowledge.types";
 
 interface UseKnowledgeTableProps {
   items: KnowledgeItem[];
   onRemoveItem?: (id: string) => void | Promise<void>;
   onRetryProcessing?: (id: string) => void | Promise<void>;
-}
-
-export interface ModalState {
-  isOpen: boolean;
-  type: KnowledgeModalType;
-  selectedItem: KnowledgeItem | null;
 }
 
 export function getTypeIcon(type: string) {
