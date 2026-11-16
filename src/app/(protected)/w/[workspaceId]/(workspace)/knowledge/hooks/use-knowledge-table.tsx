@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { FileText, Globe, FileCode } from "lucide-react";
 import type { KnowledgeItem } from "../services/knowledge.service";
 import type { KnowledgeModalType } from "../_components/KnowledgeActionModal";
@@ -89,6 +89,43 @@ export function useKnowledgeTable({
     selectedItem: null,
   });
 
+  // Search & Category Filter States
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
+
+  // Extract unique categories dynamically from items
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    items.forEach((item) => {
+      if (item.type) set.add(item.type);
+    });
+    return Array.from(set);
+  }, [items]);
+
+  // Filter items by search query and category
+  const filteredItems = useMemo(() => {
+    return items.filter((item) => {
+      const q = searchQuery.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        item.name.toLowerCase().includes(q) ||
+        item.type.toLowerCase().includes(q) ||
+        item.source.toLowerCase().includes(q);
+
+      const matchesCategory =
+        selectedCategory === "all" ||
+        item.type.toLowerCase() === selectedCategory.toLowerCase();
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [items, searchQuery, selectedCategory]);
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSelectedCategory("all");
+  };
+
   const toggleMenu = (id: string) => {
     setActiveMenuId((prev) => (prev === id ? null : id));
   };
@@ -147,7 +184,7 @@ export function useKnowledgeTable({
   };
 
   const isNearBottom = (index: number) => {
-    return index >= items.length - 2 && items.length > 2;
+    return index >= filteredItems.length - 2 && filteredItems.length > 2;
   };
 
   return {
@@ -164,5 +201,14 @@ export function useKnowledgeTable({
     getTypeIcon,
     getAvailabilityBadge,
     formatDate,
+    searchQuery,
+    setSearchQuery,
+    selectedCategory,
+    setSelectedCategory,
+    isCategoryMenuOpen,
+    setIsCategoryMenuOpen,
+    categories,
+    filteredItems,
+    clearFilters,
   };
 }

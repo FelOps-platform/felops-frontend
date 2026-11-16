@@ -84,7 +84,7 @@ export function KnowledgeActionModal({
       aria-modal="true"
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-secondary-950/70 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-secondary-950/70 backdrop-blur p-4 animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget && !isRemoving && !isRetrying) {
           onClose();
