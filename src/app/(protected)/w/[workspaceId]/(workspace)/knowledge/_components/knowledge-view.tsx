@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import {
   getWorkspaceKnowledge,
+  deleteWorkspaceKnowledge,
+  retryKnowledgeProcessing,
   type KnowledgeItem,
 } from "../services/knowledge.service";
 import { KnowledgeTable } from "./knowledge-table";
@@ -42,16 +44,34 @@ export function KnowledgeView({ workspaceId }: KnowledgeViewProps) {
     };
   }, [workspaceId]);
 
-  const handleRemoveItem = (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  const handleRemoveItem = async (id: string) => {
+    try {
+      await deleteWorkspaceKnowledge(workspaceId, id);
+      setItems((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("Failed to delete knowledge item:", error);
+    }
   };
 
+  const handleRetryProcessing = async (id: string) => {
+    try {
+      await retryKnowledgeProcessing(workspaceId, id);
+      // Optimistically set status to Processing
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === id ? { ...item, status: "Processing" } : item
+        )
+      );
+    } catch (error) {
+      console.error("Failed to retry processing:", error);
+    }
+  };
 
   return (
     <div className="space-y-6 max-w-6xl">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-secondary-50/10">
         <div>
-          <h1 className="text-2xl sm:text-3xl text-semibold tracking-tight text-secondary-50">
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-secondary-50">
             Knowledge
           </h1>
           <p className="text-xs sm:text-sm text-secondary-100 mt-1">
@@ -84,6 +104,7 @@ export function KnowledgeView({ workspaceId }: KnowledgeViewProps) {
             // TODO: Open modal or navigate to add knowledge source flow
           }}
           onRemoveItem={handleRemoveItem}
+          onRetryProcessing={handleRetryProcessing}
         />
       )}
     </div>

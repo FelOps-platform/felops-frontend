@@ -4,7 +4,7 @@ export interface KnowledgeItem {
   type: string;
   source: string;
   status: string;
-  availability?: "Shared" | "Private";
+  assignedAgents?: string[];
   createdAt: string;
 }
 
@@ -19,6 +19,7 @@ export const MOCK_KNOWLEDGE_ITEMS: KnowledgeItem[] = [
     type: "PDF",
     source: "refund-policy-2026.pdf",
     status: "Ready",
+    assignedAgents: ["Customer Support", "Billing Assistant"],
     createdAt: "2026-11-10T08:30:00Z",
   },
   {
@@ -27,6 +28,7 @@ export const MOCK_KNOWLEDGE_ITEMS: KnowledgeItem[] = [
     type: "Website",
     source: "https://docs.felops.com/v1",
     status: "Ready",
+    assignedAgents: ["Developer Assistant", "Technical Support", "Docs Bot"],
     createdAt: "2026-11-12T11:45:00Z",
   },
   {
@@ -35,6 +37,7 @@ export const MOCK_KNOWLEDGE_ITEMS: KnowledgeItem[] = [
     type: "PDF",
     source: "support-faqs-v3.csv",
     status: "Processing",
+    assignedAgents: [],
     createdAt: "2026-11-14T14:15:00Z",
   },
   {
@@ -43,6 +46,7 @@ export const MOCK_KNOWLEDGE_ITEMS: KnowledgeItem[] = [
     type: "PDF",
     source: "notion://enterprise-sla",
     status: "Ready",
+    assignedAgents: ["Enterprise Sales", "Legal Assistant"],
     createdAt: "2026-11-15T09:20:00Z",
   },
   {
@@ -51,6 +55,7 @@ export const MOCK_KNOWLEDGE_ITEMS: KnowledgeItem[] = [
     type: "PDF",
     source: "billing-guidelines-draft.docx",
     status: "Failed",
+    assignedAgents: [],
     createdAt: "2026-11-15T16:00:00Z",
   },
 ];
@@ -58,6 +63,22 @@ export const MOCK_KNOWLEDGE_ITEMS: KnowledgeItem[] = [
 export async function getWorkspaceKnowledge(
   workspaceId: string
 ): Promise<KnowledgeItem[]> {
-  // TODO: Replace with actual backend API call
+  // TODO: Replace with actual backend API call (e.g. GET /api/workspaces/${workspaceId}/knowledge)
   return MOCK_KNOWLEDGE_ITEMS;
+}
+
+export async function deleteWorkspaceKnowledge(
+  workspaceId: string,
+  itemId: string
+): Promise<void> {
+  // TODO: Replace with actual backend API call (e.g. DELETE /api/workspaces/${workspaceId}/knowledge/${itemId})
+  return Promise.resolve();
+}
+
+export async function retryKnowledgeProcessing(
+  workspaceId: string,
+  itemId: string
+): Promise<void> {
+  // TODO: Replace with actual backend API call or WebSocket trigger (e.g. POST /api/workspaces/${workspaceId}/knowledge/${itemId}/retry)
+  return Promise.resolve();
 }
