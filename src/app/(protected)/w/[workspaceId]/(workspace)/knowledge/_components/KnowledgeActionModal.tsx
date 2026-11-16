@@ -3,18 +3,14 @@
 import React, { useEffect, useCallback } from "react";
 import {
   X,
+  AlertCircle,
   AlertTriangle,
   Clock,
-  BotMessageSquare,
+  Users,
   RotateCw,
   Trash2,
 } from "lucide-react";
-
-export type KnowledgeModalType =
-  | "unavailable"
-  | "processing"
-  | "available"
-  | "remove_confirm";
+import type { KnowledgeModalType } from "../types/knowledge.types";
 
 export interface KnowledgeActionModalProps {
   isOpen: boolean;
@@ -84,7 +80,7 @@ export function KnowledgeActionModal({
       aria-modal="true"
       aria-labelledby="modal-title"
       aria-describedby="modal-description"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-secondary-950/70 backdrop-blur p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-secondary-950/70 backdrop-blur-sm p-4 animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget && !isRemoving && !isRetrying) {
           onClose();
@@ -117,10 +113,10 @@ export function KnowledgeActionModal({
         <div id="modal-description" className="mb-6">
           {type === "unavailable" && (
             <div className="flex items-start gap-3 p-4 rounded-2xl bg-wrong-50 border border-wrong-200 text-wrong-950">
-              <AlertTriangle className="w-5 h-5 text-wrong-700 shrink-0 mt-0.5" />
+              <AlertCircle className="w-5 h-5 text-wrong-600 shrink-0 mt-0.5" />
               <div className="text-xs sm:text-sm leading-relaxed">
-                <p className="font-semibold text-wrong-900">This source is unavailable</p>
-                <p className="mt-0.5 text-wrong-400">
+                <p className="font-semibold text-wrong-900">Unavailable</p>
+                <p className="mt-0.5 text-wrong-800">
                   This source is unavailable. Retry processing before assigning
                   this source to Agents.
                 </p>
@@ -132,10 +128,10 @@ export function KnowledgeActionModal({
             <div className="flex items-start gap-3 p-4 rounded-2xl bg-secondary2-50 border border-secondary2-200 text-secondary2-950">
               <Clock className="w-5 h-5 text-secondary2-600 shrink-0 mt-0.5 animate-pulse" />
               <div className="text-xs sm:text-sm leading-relaxed">
-                <p className="font-semibold text-secondary2-700">
+                <p className="font-semibold text-secondary2-900">
                   Processing in progress
                 </p>
-                <p className="mt-0.5 text-secondary2-300">
+                <p className="mt-0.5 text-secondary2-800">
                   This source is still processing. It cannot be used by Agents
                   until processing is complete.
                 </p>
@@ -145,13 +141,15 @@ export function KnowledgeActionModal({
 
           {type === "available" && (
             <div className="flex items-start gap-3 p-4 rounded-2xl bg-secondary-50/70 border border-secondary-200 text-secondary-950">
-              <BotMessageSquare className="w-5 h-5 text-secondary-700 shrink-0 mt-0.5" />
+              <Users className="w-5 h-5 text-secondary-700 shrink-0 mt-0.5" />
               <div className="text-xs sm:text-sm leading-relaxed">
                 <p className="font-semibold text-secondary-950">
                   {assignedAgents.length} Assigned Agents
                 </p>
                 <p className="mt-0.5 text-neutral-700">
-                  {assignedAgents.length > 0 ? assignedAgents.join(", ") : "No agents assigned"}
+                  {assignedAgents.length > 0
+                    ? assignedAgents.join(", ")
+                    : "No agents assigned"}
                 </p>
               </div>
             </div>
@@ -159,10 +157,10 @@ export function KnowledgeActionModal({
 
           {type === "remove_confirm" && (
             <div className="flex items-start gap-3 p-4 rounded-2xl bg-wrong-50 border border-wrong-200 text-wrong-950">
-              <AlertTriangle className="w-5 h-5 text-wrong-700 shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-wrong-600 shrink-0 mt-0.5" />
               <div className="text-xs sm:text-sm leading-relaxed">
-                <p className="font-semibold text-wrong-700">Are you sure?</p>
-                <p className="mt-0.5 text-wrong-300">
+                <p className="font-semibold text-wrong-900">Are you sure?</p>
+                <p className="mt-0.5 text-wrong-800">
                   This action cannot be undone. Removing this source deletes it
                   from Workspace Shared Knowledge.
                 </p>
@@ -189,7 +187,7 @@ export function KnowledgeActionModal({
           )}
 
           {type === "remove_confirm" && (
-            <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3">
+            <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
               <button
                 type="button"
                 onClick={onClose}
