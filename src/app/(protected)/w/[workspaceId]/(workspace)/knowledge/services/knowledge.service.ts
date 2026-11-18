@@ -4,32 +4,36 @@ export type { KnowledgeItem };
 
 // ---------------------------------------------------------------------------
 // Mock Data Simulating Backend Workspace Knowledge Items
+// Valid URLs and sample dummy PDF links for preview & interaction
 // ---------------------------------------------------------------------------
+
+const DUMMY_PDF_URL =
+  "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
 
 export const MOCK_KNOWLEDGE_ITEMS: KnowledgeItem[] = [
   {
     id: "kn_doc_001",
-    name: "Customer Refund & Return Policy",
+    name: "Customer Refund Policy",
     type: "PDF",
-    source: "refund-policy-2026.pdf",
+    source: DUMMY_PDF_URL,
     status: "Ready",
     assignedAgents: ["Customer Support", "Billing Assistant"],
     createdAt: "2026-11-10T08:30:00Z",
   },
   {
     id: "kn_web_002",
-    name: "Product Documentation & API Specs",
+    name: "Product Documentation",
     type: "Website",
-    source: "https://docs.felops.com/v1",
+    source: "https://docs.felops.com",
     status: "Ready",
     assignedAgents: ["Developer Assistant", "Technical Support", "Docs Bot"],
     createdAt: "2026-11-12T11:45:00Z",
   },
   {
     id: "kn_faq_003",
-    name: "Support Q&A Knowledge Sheet",
+    name: "Support Q&A Database",
     type: "PDF",
-    source: "support-faqs-v3.csv",
+    source: DUMMY_PDF_URL,
     status: "Processing",
     assignedAgents: [],
     createdAt: "2026-11-14T14:15:00Z",
@@ -37,8 +41,8 @@ export const MOCK_KNOWLEDGE_ITEMS: KnowledgeItem[] = [
   {
     id: "kn_db_004",
     name: "Enterprise SLA Agreements",
-    type: "PDF",
-    source: "notion://enterprise-sla",
+    type: "Website",
+    source: "https://notion.so/felops-enterprise-sla",
     status: "Ready",
     assignedAgents: ["Enterprise Sales", "Legal Assistant"],
     createdAt: "2026-11-15T09:20:00Z",
@@ -47,32 +51,53 @@ export const MOCK_KNOWLEDGE_ITEMS: KnowledgeItem[] = [
     id: "kn_doc_005",
     name: "Billing & Payment Guidelines",
     type: "PDF",
-    source: "billing-guidelines-draft.docx",
+    source: DUMMY_PDF_URL,
     status: "Failed",
     assignedAgents: [],
     createdAt: "2026-11-15T16:00:00Z",
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Service Functions & Backend Integration Points
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetch knowledge sources for a specific workspace.
+ * TODO (Backend Integration):
+ * 1. Replace with actual HTTP client call: GET /api/workspaces/${workspaceId}/knowledge
+ * 2. Handle unauthorized (401/403) and not found (404) states.
+ * 3. Validate response data shape using Zod or runtime guards.
+ */
 export async function getWorkspaceKnowledge(
   workspaceId: string
 ): Promise<KnowledgeItem[]> {
-  // TODO: Replace with actual backend API call (e.g. GET /api/workspaces/${workspaceId}/knowledge)
   return MOCK_KNOWLEDGE_ITEMS;
 }
 
+/**
+ * Remove a knowledge item from a workspace.
+ * TODO (Backend Integration):
+ * 1. Call DELETE /api/workspaces/${workspaceId}/knowledge/${itemId}
+ * 2. Ensure server invalidates indexing cache for assigned agents.
+ */
 export async function deleteWorkspaceKnowledge(
   workspaceId: string,
   itemId: string
 ): Promise<void> {
-  // TODO: Replace with actual backend API call (e.g. DELETE /api/workspaces/${workspaceId}/knowledge/${itemId})
   return Promise.resolve();
 }
 
+/**
+ * Retry processing an unavailable or failed knowledge item.
+ * TODO (Backend Integration):
+ * 1. Call POST /api/workspaces/${workspaceId}/knowledge/${itemId}/retry
+ * 2. Server re-queues document ingestion/vectorization job.
+ * 3. Set up WebSocket/SSE subscription or polling to receive status updates.
+ */
 export async function retryKnowledgeProcessing(
   workspaceId: string,
   itemId: string
 ): Promise<void> {
-  // TODO: Replace with actual backend API call or WebSocket trigger (e.g. POST /api/workspaces/${workspaceId}/knowledge/${itemId}/retry)
   return Promise.resolve();
 }
