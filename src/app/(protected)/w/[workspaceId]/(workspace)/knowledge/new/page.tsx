@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { AddKnowledgeWizard } from "../_components/add-knowledge/add-knowledge-wizard";
+import { AddKnowledgeForm } from "../_components/add-knowledge/add-knowledge-form";
 
 interface NewKnowledgePageProps {
   params: Promise<{ workspaceId: string }>;
@@ -7,23 +7,23 @@ interface NewKnowledgePageProps {
 
 async function NewKnowledgeContent({ params }: NewKnowledgePageProps) {
   const { workspaceId } = await params;
-  return <AddKnowledgeWizard workspaceId={workspaceId} />;
+  return <AddKnowledgeForm workspaceId={workspaceId} />;
 }
 
 export default function NewKnowledgePage({ params }: NewKnowledgePageProps) {
   return (
     <Suspense
       fallback={
-        <div className="max-w-6xl mx-auto p-4 space-y-6 animate-pulse">
-          <div className="flex items-center gap-3.5 mb-8 pb-5">
-            <div className="w-10 h-10 rounded-xl bg-secondary-900/40" />
-            <div className="space-y-2">
-              <div className="h-6 w-48 bg-secondary-900/40 rounded-lg" />
-              <div className="h-4 w-72 bg-secondary-900/20 rounded-lg" />
-            </div>
+        <div className="space-y-6 max-w-6xl animate-pulse">
+          <div>
+            <div className="w-9 h-9 rounded-xl bg-secondary-900/40 mb-5" />
+            <div className="h-7 w-64 bg-secondary-900/40 rounded-lg mb-2" />
+            <div className="h-4 w-96 bg-secondary-900/20 rounded-lg" />
           </div>
-          <div className="h-12 w-full bg-secondary-900/30 rounded-2xl" />
-          <div className="h-96 w-full bg-secondary-900/20 rounded-2xl" />
+          <div className="max-w-2xl mx-auto space-y-6">
+            <div className="h-8 w-48 mx-auto bg-secondary-900/30 rounded-2xl" />
+            <div className="h-96 w-full bg-secondary-900/20 rounded-3xl" />
+          </div>
         </div>
       }
     >
