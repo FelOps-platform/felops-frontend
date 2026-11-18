@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import {
   getWorkspaceKnowledge,
@@ -15,6 +17,7 @@ interface KnowledgeViewProps {
 }
 
 export function KnowledgeView({ workspaceId }: KnowledgeViewProps) {
+  const router = useRouter();
   const [items, setItems] = useState<KnowledgeItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -96,13 +99,13 @@ export function KnowledgeView({ workspaceId }: KnowledgeViewProps) {
         </div>
 
         {/* Add Knowledge Source Button */}
-        <button
-          type="button"
+        <Link
+          href={`/w/${workspaceId}/knowledge/new`}
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary-500 hover:bg-secondary-600 text-secondary-50 font-semibold text-xs sm:text-sm transition-all shadow-md active:scale-[0.99] cursor-pointer self-start sm:self-auto shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Add Knowledge Source</span>
-        </button>
+        </Link>
       </div>
 
       {/* Content Area */}
@@ -117,7 +120,7 @@ export function KnowledgeView({ workspaceId }: KnowledgeViewProps) {
         <KnowledgeTable
           items={items}
           onAddKnowledge={() => {
-            // TODO: Open modal or navigate to add knowledge source flow
+            router.push(`/w/${workspaceId}/knowledge/new`);
           }}
           onRemoveItem={handleRemoveItem}
           onRetryProcessing={handleRetryProcessing}
