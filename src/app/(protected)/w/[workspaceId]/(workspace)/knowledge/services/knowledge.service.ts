@@ -1,6 +1,9 @@
-import type { KnowledgeItem } from "../types/knowledge.types";
+import type {
+  KnowledgeItem,
+  CreateKnowledgeInput,
+} from "../types/knowledge.types";
 
-export type { KnowledgeItem };
+export type { KnowledgeItem, CreateKnowledgeInput };
 
 // ---------------------------------------------------------------------------
 // Mock Data Simulating Backend Workspace Knowledge Items
@@ -100,4 +103,29 @@ export async function retryKnowledgeProcessing(
   itemId: string
 ): Promise<void> {
   return Promise.resolve();
+}
+
+/**
+ * Create a new knowledge source in a workspace.
+ * TODO (Backend Integration):
+ * 1. Call POST /api/workspaces/${workspaceId}/knowledge
+ * 2. Send multipart/form-data if file is present, or JSON payload for website URL.
+ * 3. Return newly created KnowledgeItem.
+ */
+export async function createWorkspaceKnowledge(
+  workspaceId: string,
+  input: CreateKnowledgeInput
+): Promise<KnowledgeItem> {
+  const newItem: KnowledgeItem = {
+    id: `kn_${Date.now()}`,
+    name: input.name,
+    type: input.type,
+    source: input.source,
+    status: "Processing",
+    assignedAgents: [],
+    createdAt: new Date().toISOString(),
+  };
+
+  MOCK_KNOWLEDGE_ITEMS.unshift(newItem);
+  return newItem;
 }
