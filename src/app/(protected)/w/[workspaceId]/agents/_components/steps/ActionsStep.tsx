@@ -35,7 +35,7 @@ export function ActionsStep({ workspaceId }: ActionsStepProps) {
   const filteredActions = actions.filter(
     (action) =>
       action.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      action.description.toLowerCase().includes(searchQuery.toLowerCase())
+      action.description.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // ---------------------------------------------------------------------------
@@ -61,7 +61,7 @@ export function ActionsStep({ workspaceId }: ActionsStepProps) {
       setValue(
         "actionIds",
         actions.map((a) => a.id),
-        { shouldValidate: true, shouldDirty: true }
+        { shouldValidate: true, shouldDirty: true },
       );
     }
   };
@@ -74,7 +74,8 @@ export function ActionsStep({ workspaceId }: ActionsStepProps) {
           Assign Workspace Actions
         </h2>
         <p className="text-sm text-secondary-400 mt-1">
-          Choose which available Actions this Agent may request. Policies still apply at execution time.
+          Choose which available Actions this Agent may request. Policies still
+          apply at execution time.
         </p>
       </div>
 
@@ -101,7 +102,8 @@ export function ActionsStep({ workspaceId }: ActionsStepProps) {
             No Workspace Actions available
           </h3>
           <p className="text-sm text-neutral-600 mt-1.5 max-w-sm leading-relaxed w-80">
-            Connect and configure Actions at the Workspace level before assigning them to an Agent.
+            Connect and configure Actions at the Workspace level before
+            assigning them to an Agent.
           </p>
 
           <Link
@@ -164,20 +166,24 @@ export function ActionsStep({ workspaceId }: ActionsStepProps) {
                   <div
                     key={action.id}
                     onClick={() => handleToggleAction(action.id)}
-                    className={`group relative flex items-start gap-3.5 p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer select-none ${isSelected
-                      ? "bg-secondary-50/20 border-secondary-500 shadow-xs ring-1 ring-secondary-500/30"
-                      : "border-neutral-200/90 hover:border-neutral-300 hover:shadow-2xs"
-                      }`}
+                    className={`group relative flex items-start gap-3.5 p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer select-none ${
+                      isSelected
+                        ? "bg-secondary-50/20 border-secondary-500 shadow-xs ring-1 ring-secondary-500/30"
+                        : "border-neutral-200/90 hover:border-neutral-300 hover:shadow-2xs"
+                    }`}
                   >
                     {/*Checkbox */}
                     <div className="pt-0.5 shrink-0">
                       <div
-                        className={`w-5 h-5 rounded-lg flex items-center justify-center transition-all ${isSelected
-                          ? "bg-secondary-500 text-white shadow-xs"
-                          : "border border-neutral-300 group-hover:border-neutral-400"
-                          }`}
+                        className={`w-5 h-5 rounded-lg flex items-center justify-center transition-all ${
+                          isSelected
+                            ? "bg-secondary-500 text-white shadow-xs"
+                            : "border border-neutral-300 group-hover:border-neutral-400"
+                        }`}
                       >
-                        {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                        {isSelected && (
+                          <Check className="w-3.5 h-3.5 stroke-[3]" />
+                        )}
                       </div>
                     </div>
 

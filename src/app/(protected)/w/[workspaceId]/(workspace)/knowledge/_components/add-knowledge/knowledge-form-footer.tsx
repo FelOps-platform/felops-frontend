@@ -50,12 +50,17 @@ export function KnowledgeFormFooter({
         type="button"
         onClick={onNext}
         disabled={isNextDisabled || isSubmitting}
-        className={`px-6 py-2.5 text-sm font-semibold rounded-xl transition-all shadow-sm ${isNextDisabled || isSubmitting
+        className={`px-6 py-2.5 text-sm font-semibold rounded-xl transition-all shadow-sm ${
+          isNextDisabled || isSubmitting
             ? "bg-neutral-200 text-neutral-400 cursor-not-allowed"
             : "bg-secondary-500 hover:bg-secondary-600 text-secondary-50 hover:shadow-md active:scale-[0.99] cursor-pointer"
-          }`}
+        }`}
       >
-        {isLastStep ? (isSubmitting ? "Adding Source..." : "Finish") : "Continue"}
+        {isLastStep
+          ? isSubmitting
+            ? "Adding Source..."
+            : "Finish"
+          : "Continue"}
       </button>
     </div>
   );

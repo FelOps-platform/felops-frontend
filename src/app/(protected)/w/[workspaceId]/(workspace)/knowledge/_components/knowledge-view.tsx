@@ -69,8 +69,8 @@ export function KnowledgeView({ workspaceId }: KnowledgeViewProps) {
     const previousItems = items;
     setItems((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, status: "Processing" } : item
-      )
+        item.id === id ? { ...item, status: "Processing" } : item,
+      ),
     );
 
     try {
@@ -94,7 +94,8 @@ export function KnowledgeView({ workspaceId }: KnowledgeViewProps) {
             Knowledge
           </h1>
           <p className="text-xs sm:text-sm text-secondary-100 mt-1 w-2/3">
-            Manage shared knowledge sources that your Workspace Agents can use to understand your business and perform tasks.
+            Manage shared knowledge sources that your Workspace Agents can use
+            to understand your business and perform tasks.
           </p>
         </div>
 

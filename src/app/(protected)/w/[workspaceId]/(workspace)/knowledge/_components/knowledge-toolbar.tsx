@@ -57,7 +57,9 @@ export function KnowledgeToolbar({
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-secondary-700" />
             <span>
-              {selectedCategory === "all" ? "Filter by category" : selectedCategory}
+              {selectedCategory === "all"
+                ? "Filter by category"
+                : selectedCategory}
             </span>
           </div>
           <ChevronDown
@@ -70,10 +72,7 @@ export function KnowledgeToolbar({
         {/* Category Dropdown Menu */}
         {isCategoryMenuOpen && (
           <>
-            <div
-              className="fixed inset-0 z-30"
-              onClick={onCloseCategoryMenu}
-            />
+            <div className="fixed inset-0 z-30" onClick={onCloseCategoryMenu} />
             <div className="absolute right-0 mt-1.5 z-40 w-48 rounded-xl bg-secondary-50 border border-neutral-300 p-1.5 shadow-xl text-xs sm:text-sm animate-in fade-in zoom-in-95 duration-100">
               <button
                 type="button"

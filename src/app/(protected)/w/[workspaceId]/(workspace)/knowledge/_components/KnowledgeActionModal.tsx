@@ -40,7 +40,7 @@ export function KnowledgeActionModal({
         onClose();
       }
     },
-    [isOpen, isRemoving, isRetrying, onClose]
+    [isOpen, isRemoving, isRetrying, onClose],
   );
 
   useEffect(() => {
@@ -179,7 +179,9 @@ export function KnowledgeActionModal({
                 disabled={isRetrying || isRemoving}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-300 bg-white hover:bg-neutral-100 text-secondary-950 font-semibold text-xs sm:text-sm transition-all shadow-xs cursor-pointer disabled:opacity-50 active:scale-[0.99]"
               >
-                <RotateCw className={`w-4 h-4 text-secondary-700 ${isRetrying ? "animate-spin" : ""}`} />
+                <RotateCw
+                  className={`w-4 h-4 text-secondary-700 ${isRetrying ? "animate-spin" : ""}`}
+                />
                 <span>{isRetrying ? "Retrying..." : "Retry processing"}</span>
               </button>
               {renderRemoveButton()}
@@ -201,9 +203,7 @@ export function KnowledgeActionModal({
           )}
 
           {(type === "processing" || type === "available") && (
-            <div className="flex justify-end">
-              {renderRemoveButton()}
-            </div>
+            <div className="flex justify-end">{renderRemoveButton()}</div>
           )}
         </div>
       </div>

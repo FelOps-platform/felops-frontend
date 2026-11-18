@@ -213,10 +213,11 @@ export default function VerifyOtpModal({
                 value={digit}
                 onChange={(e) => handleChange(e.target.value, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
-                className={`w-11 h-14 text-center text-lg font-bold rounded-xl transition-all disabled:opacity-50 ${error
+                className={`w-11 h-14 text-center text-lg font-bold rounded-xl transition-all disabled:opacity-50 ${
+                  error
                     ? "bg-wrong-50/40 border border-wrong-500 text-wrong-700 focus:outline-none focus:ring-2 focus:ring-wrong-500/20"
                     : "bg-white border border-neutral-300 text-neutral-900 focus:outline-none focus:border-secondary-500 focus:ring-2 focus:ring-secondary-500/20"
-                  }`}
+                }`}
               />
             ))}
           </div>
@@ -244,10 +245,11 @@ export default function VerifyOtpModal({
               type="button"
               disabled={timeLeft > 0 || isVerifying}
               onClick={handleResendClick}
-              className={`font-semibold transition-colors ${timeLeft > 0 || isVerifying
+              className={`font-semibold transition-colors ${
+                timeLeft > 0 || isVerifying
                   ? "text-neutral-400 cursor-not-allowed"
                   : "text-secondary-500 hover:text-secondary-600 hover:underline cursor-pointer"
-                }`}
+              }`}
             >
               Resend code
             </button>

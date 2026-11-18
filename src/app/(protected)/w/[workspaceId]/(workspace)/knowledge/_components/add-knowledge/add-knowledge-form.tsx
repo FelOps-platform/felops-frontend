@@ -16,13 +16,15 @@ function isValidUrl(urlString: string): boolean {
   const trimmed = urlString.trim();
   if (!trimmed) return false;
   try {
-    const toTest = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+    const toTest = /^https?:\/\//i.test(trimmed)
+      ? trimmed
+      : `https://${trimmed}`;
     const parsed = new URL(toTest);
     const parts = parsed.hostname.split(".");
     return Boolean(
       (parsed.protocol === "http:" || parsed.protocol === "https:") &&
       parts.length >= 2 &&
-      (parts.pop()?.length ?? 0) >= 2
+      (parts.pop()?.length ?? 0) >= 2,
     );
   } catch {
     return false;
@@ -117,7 +119,8 @@ export function AddKnowledgeForm({ workspaceId }: AddKnowledgeFormProps) {
           Add Knowledge Source
         </h1>
         <p className="text-xs sm:text-sm text-secondary-100 mt-1 max-w-xl">
-          Add a source to your Workspace. It can be assigned to eligible Agents after processing.
+          Add a source to your Workspace. It can be assigned to eligible Agents
+          after processing.
         </p>
       </div>
 
@@ -125,7 +128,9 @@ export function AddKnowledgeForm({ workspaceId }: AddKnowledgeFormProps) {
         <KnowledgeStepper
           currentStep={currentStep}
           totalSteps={totalSteps}
-          onStepClick={(stepId) => stepId < currentStep && setCurrentStep(stepId)}
+          onStepClick={(stepId) =>
+            stepId < currentStep && setCurrentStep(stepId)
+          }
         />
 
         <div className="bg-neutral-50 rounded-3xl p-6 sm:p-8 shadow-xl border border-neutral-200">
@@ -146,20 +151,22 @@ export function AddKnowledgeForm({ workspaceId }: AddKnowledgeFormProps) {
                 <button
                   type="button"
                   onClick={() => setSourceType("file")}
-                  className={`flex flex-col justify-between p-5 rounded-2xl border-2 text-left transition-all cursor-pointer min-h-[140px] cursor-pointer ${sourceType === "file"
-                    ? "border-secondary-500  shadow-xs"
-                    : "border-neutral-200 hover:border-neutral-300"
-                    }`}
+                  className={`flex flex-col justify-between p-5 rounded-2xl border-2 text-left transition-all cursor-pointer min-h-[140px] cursor-pointer ${
+                    sourceType === "file"
+                      ? "border-secondary-500  shadow-xs"
+                      : "border-neutral-200 hover:border-neutral-300"
+                  }`}
                 >
                   <div className="flex items-center justify-between w-full">
                     <div className="w-9 h-9 rounded-xl bg-secondary-500 text-secondary-50 flex items-center justify-center shadow-xs">
                       <Upload className="w-4 h-4 stroke-[2.5]" />
                     </div>
                     <div
-                      className={`w-4 h-4 rounded-full transition-all ${sourceType === "file"
-                        ? "bg-secondary-500"
-                        : "border-2 border-secondary-300 bg-transparent"
-                        }`}
+                      className={`w-4 h-4 rounded-full transition-all ${
+                        sourceType === "file"
+                          ? "bg-secondary-500"
+                          : "border-2 border-secondary-300 bg-transparent"
+                      }`}
                     />
                   </div>
                   <div className="mt-4">
@@ -176,20 +183,22 @@ export function AddKnowledgeForm({ workspaceId }: AddKnowledgeFormProps) {
                 <button
                   type="button"
                   onClick={() => setSourceType("website")}
-                  className={`flex flex-col justify-between p-5 rounded-2xl border-2 text-left transition-all cursor-pointer min-h-[140px] ${sourceType === "website"
-                    ? "border-secondary-500  shadow-xs"
-                    : "border-neutral-200  hover:border-neutral-300"
-                    }`}
+                  className={`flex flex-col justify-between p-5 rounded-2xl border-2 text-left transition-all cursor-pointer min-h-[140px] ${
+                    sourceType === "website"
+                      ? "border-secondary-500  shadow-xs"
+                      : "border-neutral-200  hover:border-neutral-300"
+                  }`}
                 >
                   <div className="flex items-center justify-between w-full">
                     <div className="w-9 h-9 rounded-xl bg-secondary-500 text-secondary-50 flex items-center justify-center shadow-xs">
                       <Globe className="w-4 h-4 stroke-[2.5]" />
                     </div>
                     <div
-                      className={`w-4 h-4 rounded-full transition-all ${sourceType === "website"
-                        ? "bg-secondary-500"
-                        : "border-2 border-secondary-300 bg-transparent"
-                        }`}
+                      className={`w-4 h-4 rounded-full transition-all ${
+                        sourceType === "website"
+                          ? "bg-secondary-500"
+                          : "border-2 border-secondary-300 bg-transparent"
+                      }`}
                     />
                   </div>
                   <div className="mt-4">
@@ -215,7 +224,8 @@ export function AddKnowledgeForm({ workspaceId }: AddKnowledgeFormProps) {
                       Upload File
                     </h2>
                     <p className="text-xs sm:text-sm text-secondary-300  mt-1">
-                      Drag and drop your document here, or browse files from your device.
+                      Drag and drop your document here, or browse files from
+                      your device.
                     </p>
                   </div>
 
@@ -265,7 +275,8 @@ export function AddKnowledgeForm({ workspaceId }: AddKnowledgeFormProps) {
                             {file.name}
                           </p>
                           <p className="text-xs text-neutral-500">
-                            {(file.size / 1024 / 1024).toFixed(1)} MB • Ready to upload
+                            {(file.size / 1024 / 1024).toFixed(1)} MB • Ready to
+                            upload
                           </p>
                         </div>
                       </div>
@@ -273,7 +284,8 @@ export function AddKnowledgeForm({ workspaceId }: AddKnowledgeFormProps) {
                         type="button"
                         onClick={() => {
                           setFile(null);
-                          if (fileInputRef.current) fileInputRef.current.value = "";
+                          if (fileInputRef.current)
+                            fileInputRef.current.value = "";
                         }}
                         className="p-1.5 rounded-lg text-neutral-400 hover:text-secondary-950 hover:bg-neutral-100 transition-colors cursor-pointer"
                         title="Remove file"
@@ -287,9 +299,11 @@ export function AddKnowledgeForm({ workspaceId }: AddKnowledgeFormProps) {
                 <>
                   <div>
                     <h2 className="text-lg font-semibold text-secondary-950 tracking-tight">
-                      Add a website URL                    </h2>
+                      Add a website URL{" "}
+                    </h2>
                     <p className="text-xs sm:text-sm text-secondary-300 font-medium mt-1">
-                      Enter the webpage or documentation link you want to ingest.
+                      Enter the webpage or documentation link you want to
+                      ingest.
                     </p>
                   </div>
 
@@ -309,7 +323,8 @@ export function AddKnowledgeForm({ workspaceId }: AddKnowledgeFormProps) {
                     </div>
                     {url.trim().length > 0 && !isUrlValid && (
                       <p className="text-xs text-wrong-600">
-                        Please enter a valid website URL (e.g. https://example.com)
+                        Please enter a valid website URL (e.g.
+                        https://example.com)
                       </p>
                     )}
                   </div>
@@ -326,7 +341,8 @@ export function AddKnowledgeForm({ workspaceId }: AddKnowledgeFormProps) {
                   Source information
                 </h2>
                 <p className="text-xs sm:text-sm text-secondary-300  mt-1">
-                  Provide a name and optional description to identify this knowledge source.
+                  Provide a name and optional description to identify this
+                  knowledge source.
                 </p>
               </div>
 
@@ -334,7 +350,9 @@ export function AddKnowledgeForm({ workspaceId }: AddKnowledgeFormProps) {
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-secondary-950 flex items-center justify-between">
                     <span>Source Name</span>
-                    <span className="text-[11px] text-secondary-500 font-medium">Required</span>
+                    <span className="text-[11px] text-secondary-500 font-medium">
+                      Required
+                    </span>
                   </label>
                   <input
                     type="text"

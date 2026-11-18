@@ -11,7 +11,8 @@ export function KnowledgeStep() {
           Configure Knowledge
         </h2>
         <p className="text-sm text-secondary-400 mt-1">
-          Select existing Knowledge sources from your Workspace to make them available to this Agent.
+          Select existing Knowledge sources from your Workspace to make them
+          available to this Agent.
         </p>
       </div>
 
@@ -25,7 +26,8 @@ export function KnowledgeStep() {
           No Knowledge sources attached
         </h3>
         <p className="text-sm text-neutral-500 mt-1.5 max-w-md leading-relaxed">
-          Knowledge sources provide contextual information, documentation, and reference material for the Agent.
+          Knowledge sources provide contextual information, documentation, and
+          reference material for the Agent.
         </p>
 
         <button

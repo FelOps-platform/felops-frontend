@@ -40,13 +40,15 @@ export function KnowledgeStepper({
                 disabled={!isClickable}
                 aria-current={isCurrent ? "step" : undefined}
                 className={`w-7 h-7 rounded-full flex items-center justify-center font-medium text-xs shrink-0 transition-all select-none ${
-                  isClickable ? "cursor-pointer active:scale-[0.98]" : "cursor-default"
+                  isClickable
+                    ? "cursor-pointer active:scale-[0.98]"
+                    : "cursor-default"
                 } ${
                   isCompleted
                     ? "bg-right-600 text-secondary-950 shadow-xs"
                     : isCurrent
-                    ? "bg-secondary-500 text-secondary-50 shadow-md shadow-secondary-500/25 ring-2 ring-secondary-500/30"
-                    : "bg-neutral-900/60 border border-neutral-700 text-neutral-400"
+                      ? "bg-secondary-500 text-secondary-50 shadow-md shadow-secondary-500/25 ring-2 ring-secondary-500/30"
+                      : "bg-neutral-900/60 border border-neutral-700 text-neutral-400"
                 }`}
               >
                 {isCompleted ? (

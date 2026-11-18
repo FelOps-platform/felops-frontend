@@ -138,13 +138,9 @@ export function useKnowledgeTable({
     return Array.from(set);
   }, [items]);
 
-
-
   const toggleMenu = (id: string) => {
     setActiveMenuId((prev) => (prev === id ? null : id));
   };
-
-
 
   const openRemoveModal = (item: KnowledgeItem) => {
     closeMenu();

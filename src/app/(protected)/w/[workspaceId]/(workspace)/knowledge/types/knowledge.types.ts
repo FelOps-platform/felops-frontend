@@ -1,8 +1,5 @@
 export type KnowledgeModalType =
-  | "unavailable"
-  | "processing"
-  | "available"
-  | "remove_confirm";
+  "unavailable" | "processing" | "available" | "remove_confirm";
 
 export interface KnowledgeItem {
   id: string;

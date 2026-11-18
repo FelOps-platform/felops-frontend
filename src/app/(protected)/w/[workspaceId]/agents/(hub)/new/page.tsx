@@ -16,7 +16,9 @@ export default function NewAgentPage({
   params: Promise<{ workspaceId: string }>;
 }) {
   return (
-    <Suspense fallback={<div className="max-w-6xl mx-auto p-4 animate-pulse" />}>
+    <Suspense
+      fallback={<div className="max-w-6xl mx-auto p-4 animate-pulse" />}
+    >
       <NewAgentContent params={params} />
     </Suspense>
   );

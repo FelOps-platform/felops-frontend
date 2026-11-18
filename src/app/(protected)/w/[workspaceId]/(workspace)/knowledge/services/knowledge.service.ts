@@ -73,7 +73,7 @@ export const MOCK_KNOWLEDGE_ITEMS: KnowledgeItem[] = [
  * 3. Validate response data shape using Zod or runtime guards.
  */
 export async function getWorkspaceKnowledge(
-  workspaceId: string
+  workspaceId: string,
 ): Promise<KnowledgeItem[]> {
   return MOCK_KNOWLEDGE_ITEMS;
 }
@@ -86,7 +86,7 @@ export async function getWorkspaceKnowledge(
  */
 export async function deleteWorkspaceKnowledge(
   workspaceId: string,
-  itemId: string
+  itemId: string,
 ): Promise<void> {
   return Promise.resolve();
 }
@@ -100,7 +100,7 @@ export async function deleteWorkspaceKnowledge(
  */
 export async function retryKnowledgeProcessing(
   workspaceId: string,
-  itemId: string
+  itemId: string,
 ): Promise<void> {
   return Promise.resolve();
 }
@@ -114,7 +114,7 @@ export async function retryKnowledgeProcessing(
  */
 export async function createWorkspaceKnowledge(
   workspaceId: string,
-  input: CreateKnowledgeInput
+  input: CreateKnowledgeInput,
 ): Promise<KnowledgeItem> {
   const newItem: KnowledgeItem = {
     id: `kn_${Date.now()}`,

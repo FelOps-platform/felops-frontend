@@ -13,9 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="h-screen bg-secondary-950 antialiased">
-        {children}
-      </body>
+      <body className="h-screen bg-secondary-950 antialiased">{children}</body>
     </html>
   );
 }

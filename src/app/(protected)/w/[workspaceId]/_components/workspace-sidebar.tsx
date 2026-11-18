@@ -166,10 +166,11 @@ function WorkspaceSidebarContent({
           <nav className="space-y-0.5">
             <Link
               href={`/w/${workspaceId}`}
-              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${pathname === `/w/${workspaceId}`
-                ? "bg-secondary-500 text-secondary-50 font-semibold"
-                : "text-secondary-50 hover:text-secondary-50"
-                }`}
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+                pathname === `/w/${workspaceId}`
+                  ? "bg-secondary-500 text-secondary-50 font-semibold"
+                  : "text-secondary-50 hover:text-secondary-50"
+              }`}
             >
               <LayoutDashboard className="w-4 h-4 shrink-0" />
               <span>Dashboard</span>
@@ -177,10 +178,11 @@ function WorkspaceSidebarContent({
 
             <Link
               href={`/w/${workspaceId}/agents`}
-              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${pathname.startsWith(`/w/${workspaceId}/agents`)
-                ? "bg-secondary-500 text-secondary-50 font-semibold"
-                : "text-secondary-50 hover:text-secondary-50"
-                }`}
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+                pathname.startsWith(`/w/${workspaceId}/agents`)
+                  ? "bg-secondary-500 text-secondary-50 font-semibold"
+                  : "text-secondary-50 hover:text-secondary-50"
+              }`}
             >
               <Bot className="w-4 h-4 shrink-0" />
               <span>Agents</span>
@@ -188,10 +190,11 @@ function WorkspaceSidebarContent({
 
             <Link
               href={`/w/${workspaceId}/integrations`}
-              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${pathname.startsWith(`/w/${workspaceId}/integrations`)
-                ? "bg-secondary-500 text-secondary-50 font-semibold"
-                : "text-secondary-50 hover:text-secondary-50"
-                }`}
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+                pathname.startsWith(`/w/${workspaceId}/integrations`)
+                  ? "bg-secondary-500 text-secondary-50 font-semibold"
+                  : "text-secondary-50 hover:text-secondary-50"
+              }`}
             >
               <Plug className="w-4 h-4 shrink-0" />
               <span>Integrations & Actions</span>
@@ -199,10 +202,11 @@ function WorkspaceSidebarContent({
 
             <Link
               href={`/w/${workspaceId}/knowledge`}
-              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${pathname.startsWith(`/w/${workspaceId}/knowledge`)
-                ? "bg-secondary-500 text-secondary-50 font-semibold"
-                : "text-secondary-50 hover:text-secondary-50"
-                }`}
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+                pathname.startsWith(`/w/${workspaceId}/knowledge`)
+                  ? "bg-secondary-500 text-secondary-50 font-semibold"
+                  : "text-secondary-50 hover:text-secondary-50"
+              }`}
             >
               <BookOpen className="w-4 h-4 shrink-0" />
               <span>Knowledge</span>
@@ -210,10 +214,11 @@ function WorkspaceSidebarContent({
 
             <Link
               href={`/w/${workspaceId}/conversations`}
-              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${pathname.startsWith(`/w/${workspaceId}/conversations`)
-                ? "bg-secondary-500 text-secondary-50 font-semibold"
-                : "text-secondary-50 hover:text-secondary-50"
-                }`}
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+                pathname.startsWith(`/w/${workspaceId}/conversations`)
+                  ? "bg-secondary-500 text-secondary-50 font-semibold"
+                  : "text-secondary-50 hover:text-secondary-50"
+              }`}
             >
               <MessageSquare className="w-4 h-4 shrink-0" />
               <span>Conversations</span>
@@ -221,10 +226,11 @@ function WorkspaceSidebarContent({
 
             <Link
               href={`/w/${workspaceId}/audit-trail`}
-              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${pathname.startsWith(`/w/${workspaceId}/audit-trail`)
-                ? "bg-secondary-500 text-secondary-50 font-semibold"
-                : "text-secondary-50 hover:text-secondary-50"
-                }`}
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+                pathname.startsWith(`/w/${workspaceId}/audit-trail`)
+                  ? "bg-secondary-500 text-secondary-50 font-semibold"
+                  : "text-secondary-50 hover:text-secondary-50"
+              }`}
             >
               <History className="w-4 h-4 shrink-0" />
               <span>Audit trail</span>
@@ -240,10 +246,11 @@ function WorkspaceSidebarContent({
           <nav className="space-y-0.5">
             <Link
               href={`/w/${workspaceId}/policies`}
-              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${pathname.startsWith(`/w/${workspaceId}/policies`)
-                ? "bg-secondary-500 text-secondary-50 font-semibold"
-                : "text-secondary-50 hover:text-secondary-50"
-                }`}
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+                pathname.startsWith(`/w/${workspaceId}/policies`)
+                  ? "bg-secondary-500 text-secondary-50 font-semibold"
+                  : "text-secondary-50 hover:text-secondary-50"
+              }`}
             >
               <ShieldCheck className="w-4 h-4 shrink-0" />
               <span>Policies & Permissions</span>
@@ -251,10 +258,11 @@ function WorkspaceSidebarContent({
 
             <Link
               href={`/w/${workspaceId}/settings`}
-              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${pathname.startsWith(`/w/${workspaceId}/settings`)
-                ? "bg-secondary-500 text-secondary-50 font-semibold"
-                : "text-secondary-50 hover:text-secondary-50"
-                }`}
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+                pathname.startsWith(`/w/${workspaceId}/settings`)
+                  ? "bg-secondary-500 text-secondary-50 font-semibold"
+                  : "text-secondary-50 hover:text-secondary-50"
+              }`}
             >
               <Settings className="w-4 h-4 shrink-0" />
               <span>Workspace settings</span>
@@ -270,10 +278,11 @@ function WorkspaceSidebarContent({
           <nav className="space-y-0.5">
             <Link
               href="/account/profile"
-              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${pathname.startsWith("/account/profile")
-                ? "bg-secondary-500 text-secondary-50 font-semibold"
-                : "text-secondary-50 hover:text-secondary-50"
-                }`}
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+                pathname.startsWith("/account/profile")
+                  ? "bg-secondary-500 text-secondary-50 font-semibold"
+                  : "text-secondary-50 hover:text-secondary-50"
+              }`}
             >
               <User className="w-4 h-4 shrink-0" />
               <span>Profile & Account</span>
@@ -281,10 +290,11 @@ function WorkspaceSidebarContent({
 
             <Link
               href="/account/billing"
-              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${pathname.startsWith("/account/billing")
-                ? "bg-secondary-500 text-secondary-50 font-semibold"
-                : "text-secondary-50 hover:text-secondary-50"
-                }`}
+              className={`w-4/5 flex items-center gap-3 px-3 py-3 rounded-xl text-xs sm:text-sm transition-colors ${
+                pathname.startsWith("/account/billing")
+                  ? "bg-secondary-500 text-secondary-50 font-semibold"
+                  : "text-secondary-50 hover:text-secondary-50"
+              }`}
             >
               <CreditCard className="w-4 h-4 shrink-0" />
               <span>Billing</span>

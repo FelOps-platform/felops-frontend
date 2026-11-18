@@ -78,7 +78,8 @@ export function KnowledgeTable({
           No Knowledge Sources Found
         </h3>
         <p className="text-xs sm:text-sm text-secondary-300 mt-1 max-w-sm">
-          You haven&apos;t added any knowledge documents or URLs to this workspace yet.
+          You haven&apos;t added any knowledge documents or URLs to this
+          workspace yet.
         </p>
 
         <button
@@ -248,8 +249,9 @@ export function KnowledgeTable({
 
                             <div
                               onClick={(e) => e.stopPropagation()}
-                              className={`absolute end-5 z-50 w-52 rounded-xl bg-neutral-50 p-1.5 border border-neutral-300 text-secondary-950 shadow-lg ${nearBottom ? "bottom-11" : "top-11"
-                                }`}
+                              className={`absolute end-5 z-50 w-52 rounded-xl bg-neutral-50 p-1.5 border border-neutral-300 text-secondary-950 shadow-lg ${
+                                nearBottom ? "bottom-11" : "top-11"
+                              }`}
                             >
                               {/* Availability Action */}
                               <button
