@@ -19,3 +19,11 @@ export interface ModalState {
   type: KnowledgeModalType;
   selectedItem: KnowledgeItem | null;
 }
+
+export interface CreateKnowledgeInput {
+  name: string;
+  type: "PDF" | "Website";
+  source: string;
+  description?: string;
+  file?: File;
+}
