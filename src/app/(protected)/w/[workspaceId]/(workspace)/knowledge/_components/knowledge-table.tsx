@@ -7,6 +7,7 @@ import {
   Trash2,
   Shield,
   Search,
+  ExternalLink,
 } from "lucide-react";
 import type { KnowledgeItem } from "../types/knowledge.types";
 import { useKnowledgeTable } from "../hooks/use-knowledge-table";
@@ -27,19 +28,21 @@ export function KnowledgeTable({
   onRetryProcessing,
 }: KnowledgeTableProps) {
   const {
-    activeMenuId,
-    toggleMenu,
-    closeMenu,
-    modalState,
+    filteredItems,
+    clearFilters,
+    getTypeIcon,
+    getAvailabilityBadge,
     openAvailabilityModal,
-    openRemoveModal,
+    activeMenuId,
+    modalState,
     closeModal,
     handleModalRemoveSource,
     handleRetryProcessing,
-    isNearBottom,
-    getTypeIcon,
-    getAvailabilityBadge,
     formatDate,
+    closeMenu,
+    toggleMenu,
+    openRemoveModal,
+    isNearBottom,
     searchQuery,
     setSearchQuery,
     selectedCategory,
@@ -47,25 +50,41 @@ export function KnowledgeTable({
     isCategoryMenuOpen,
     setIsCategoryMenuOpen,
     categories,
-    filteredItems,
-    clearFilters,
   } = useKnowledgeTable({ items, onRemoveItem, onRetryProcessing });
+
+  const handleOpenSource = (url: string) => {
+    if (!url) return;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const handleRowClick = (item: KnowledgeItem, e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    // Don't trigger if clicked directly on or inside interactive buttons/menus
+    if (
+      target.closest("button") ||
+      target.closest("a") ||
+      target.closest("[role='menu']")
+    ) {
+      return;
+    }
+    handleOpenSource(item.source);
+  };
 
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center bg-neutral-200 rounded-2xl border border-neutral-300">
+      <div className="flex flex-col items-center justify-center p-12 text-center bg-neutral-50 rounded-2xl border border-neutral-50">
         <Database className="w-10 h-10 text-secondary-950 mb-3" />
-        <h3 className="text-base font-semibold text-secondary-950">
+        <h3 className="text-base font-bold text-secondary-950">
           No Knowledge Sources Found
         </h3>
-        <p className="text-xs sm:text-sm text-secondary-800 mt-1 max-w-sm">
+        <p className="text-xs sm:text-sm text-secondary-300 mt-1 max-w-sm">
           You haven&apos;t added any knowledge documents or URLs to this workspace yet.
         </p>
 
         <button
           type="button"
           onClick={onAddKnowledge}
-          className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary-950 hover:bg-secondary-900 text-secondary-50 font-semibold text-xs sm:text-sm transition-all shadow-md active:scale-[0.99] cursor-pointer"
+          className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary-500 hover:bg-secondary-700 text-secondary-50 font-semibold text-xs sm:text-sm transition-all shadow-md active:scale-[0.99] cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Add Knowledge Source</span>
@@ -118,17 +137,17 @@ export function KnowledgeTable({
                     colSpan={5}
                     className="py-12 text-center text-neutral-500 text-xs sm:text-sm"
                   >
-                    <Search className="w-6 h-6 mx-auto mb-2 text-neutral-400" />
-                    <p className="font-semibold text-secondary-950">
+                    <Search className="w-8 h-8 mx-auto mb-2 text-secondary-950" />
+                    <p className="font-semibold text-secondary-950 text-lg ">
                       No knowledge sources found
                     </p>
-                    <p className="text-xs text-neutral-400 mt-1">
+                    <p className="text-xs text-secondary-400 mt-1">
                       No sources match your search or selected category.
                     </p>
                     <button
                       type="button"
                       onClick={clearFilters}
-                      className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neutral-300 bg-white text-xs font-semibold text-secondary-950 hover:bg-neutral-100 transition-colors cursor-pointer shadow-2xs"
+                      className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neutral-300 bg-secondary-500 text-xs font-semibold text-secondary-50 transition-colors cursor-pointer shadow-2xs"
                     >
                       Reset filters
                     </button>
@@ -142,15 +161,35 @@ export function KnowledgeTable({
                   return (
                     <tr
                       key={item.id}
-                      className="text-secondary-950"
+                      onClick={(e) => handleRowClick(item, e)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleOpenSource(item.source);
+                        }
+                      }}
+                      tabIndex={0}
+                      role="link"
+                      aria-label={`Open source: ${item.name}`}
+                      className="text-secondary-950 hover:bg-neutral-200/50 transition-colors cursor-pointer group focus:outline-none focus:bg-neutral-200/60"
+                      title={`Click to open source (${item.source})`}
                     >
-                      {/* Name with icon */}
+                      {/* Name with icon & source preview */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2.5">
                           <span className="shrink-0 p-3 rounded-xl bg-secondary-950 text-secondary-50 flex items-center justify-center shadow-xs">
                             {getTypeIcon(item.type)}
                           </span>
-                          <span className="truncate max-w-xs">{item.name}</span>
+                          <div className="flex flex-col min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <span className="truncate max-w-xs font-medium group-hover:text-secondary-700 transition-colors">
+                                {item.name}
+                              </span>
+                            </div>
+                            <span className="text-[11px] text-secondary-400 truncate max-w-xs">
+                              {item.source}
+                            </span>
+                          </div>
                         </div>
                       </td>
 
@@ -165,7 +204,10 @@ export function KnowledgeTable({
                       <td className="px-5 py-4">
                         <button
                           type="button"
-                          onClick={() => openAvailabilityModal(item)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openAvailabilityModal(item);
+                          }}
                           className="cursor-pointer hover:opacity-80 transition-opacity inline-flex focus:outline-none"
                           title="View availability details"
                         >
@@ -182,7 +224,10 @@ export function KnowledgeTable({
                       <td className="px-5 py-4 text-end relative">
                         <button
                           type="button"
-                          onClick={() => toggleMenu(item.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleMenu(item.id);
+                          }}
                           aria-label="Actions"
                           className="p-1.5 rounded-lg text-secondary-950 hover:bg-neutral-300/80 transition-colors cursor-pointer inline-flex items-center justify-center"
                         >
@@ -195,18 +240,24 @@ export function KnowledgeTable({
                             {/* Backdrop to close menu on click outside */}
                             <div
                               className="fixed inset-0 z-40"
-                              onClick={closeMenu}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                closeMenu();
+                              }}
                             />
 
                             <div
-                              className={`absolute end-5 z-50 w-52 rounded-xl bg-neutral-50 p-1.5 border border-neutral-300 text-secondary-950 ${
-                                nearBottom ? "bottom-11" : "top-11"
-                              }`}
+                              onClick={(e) => e.stopPropagation()}
+                              className={`absolute end-5 z-50 w-52 rounded-xl bg-neutral-50 p-1.5 border border-neutral-300 text-secondary-950 shadow-lg ${nearBottom ? "bottom-11" : "top-11"
+                                }`}
                             >
                               {/* Availability Action */}
                               <button
                                 type="button"
-                                onClick={() => openAvailabilityModal(item)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openAvailabilityModal(item);
+                                }}
                                 className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-secondary-950 hover:bg-neutral-200/80 rounded-lg transition-colors cursor-pointer text-left"
                               >
                                 <Shield className="w-3.5 h-3.5 text-secondary-700" />
@@ -219,7 +270,10 @@ export function KnowledgeTable({
                               {/* Remove Item Action */}
                               <button
                                 type="button"
-                                onClick={() => openRemoveModal(item)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openRemoveModal(item);
+                                }}
                                 className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-wrong-600 hover:bg-wrong-50 rounded-lg transition-colors cursor-pointer text-left"
                               >
                                 <Trash2 className="w-3.5 h-3.5 text-wrong-600" />

@@ -31,8 +31,8 @@ export function getAvailabilityBadge(status: string = "ready") {
     normalized === "indexed"
       ? "ready"
       : normalized === "syncing"
-      ? "processing"
-      : normalized;
+        ? "processing"
+        : normalized;
 
   const config = {
     ready: {
@@ -91,24 +91,11 @@ export function useKnowledgeTable({
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
 
-  // Extract unique categories dynamically from items
-  const categories = useMemo(() => {
-    const set = new Set<string>();
-    items.forEach((item) => {
-      if (item.type) set.add(item.type);
-    });
-    return Array.from(set);
-  }, [items]);
-
-  // Filter items by search query and category
+  // Filter items by search query (matching name) and category
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
       const q = searchQuery.toLowerCase().trim();
-      const matchesSearch =
-        !q ||
-        item.name.toLowerCase().includes(q) ||
-        item.type.toLowerCase().includes(q) ||
-        item.source.toLowerCase().includes(q);
+      const matchesSearch = !q || item.name.toLowerCase().includes(q);
 
       const matchesCategory =
         selectedCategory === "all" ||
@@ -123,14 +110,6 @@ export function useKnowledgeTable({
     setSelectedCategory("all");
   };
 
-  const toggleMenu = (id: string) => {
-    setActiveMenuId((prev) => (prev === id ? null : id));
-  };
-
-  const closeMenu = () => {
-    setActiveMenuId(null);
-  };
-
   const openAvailabilityModal = (item: KnowledgeItem) => {
     closeMenu();
     const s = item.status.toLowerCase();
@@ -138,8 +117,8 @@ export function useKnowledgeTable({
       s === "failed" || s === "unavailable"
         ? "unavailable"
         : s === "processing" || s === "syncing"
-        ? "processing"
-        : "available";
+          ? "processing"
+          : "available";
 
     setModalState({
       isOpen: true,
@@ -147,6 +126,25 @@ export function useKnowledgeTable({
       selectedItem: item,
     });
   };
+  const closeMenu = () => {
+    setActiveMenuId(null);
+  };
+  // Extract unique categories dynamically from items
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    items.forEach((item) => {
+      if (item.type) set.add(item.type);
+    });
+    return Array.from(set);
+  }, [items]);
+
+
+
+  const toggleMenu = (id: string) => {
+    setActiveMenuId((prev) => (prev === id ? null : id));
+  };
+
+
 
   const openRemoveModal = (item: KnowledgeItem) => {
     closeMenu();

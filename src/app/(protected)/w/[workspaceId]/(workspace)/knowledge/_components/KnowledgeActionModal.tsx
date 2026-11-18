@@ -6,9 +6,9 @@ import {
   AlertCircle,
   AlertTriangle,
   Clock,
-  Users,
   RotateCw,
   Trash2,
+  Bot,
 } from "lucide-react";
 import type { KnowledgeModalType } from "../types/knowledge.types";
 
@@ -141,7 +141,7 @@ export function KnowledgeActionModal({
 
           {type === "available" && (
             <div className="flex items-start gap-3 p-4 rounded-2xl bg-secondary-50/70 border border-secondary-200 text-secondary-950">
-              <Users className="w-5 h-5 text-secondary-700 shrink-0 mt-0.5" />
+              <Bot className="w-5 h-5 text-secondary-700 shrink-0 mt-0.5" />
               <div className="text-xs sm:text-sm leading-relaxed">
                 <p className="font-semibold text-secondary-950">
                   {assignedAgents.length} Assigned Agents
