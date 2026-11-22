@@ -21,7 +21,11 @@ export default function AgentLayout({
   return (
     <AppFrame
       sidebar={
-        <Suspense fallback={<div className="w-80 h-screen bg-secondary-950 border-r border-secondary-50/10 shrink-0" />}>
+        <Suspense
+          fallback={
+            <div className="w-80 h-screen bg-secondary-950 border-r border-secondary-50/10 shrink-0" />
+          }
+        >
           <AgentSidebarWrapper params={params} />
         </Suspense>
       }

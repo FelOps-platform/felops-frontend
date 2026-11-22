@@ -1,18 +1,12 @@
 import { z } from "zod";
 
 // ---------------------------------------------------------------------------
-// 1. Zod Schemas 
+// 1. Zod Schemas
 // ---------------------------------------------------------------------------
 
 export const agentFormSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Enter a name for this Agent."),
-  instructions: z
-    .string()
-    .trim()
-    .min(1, "Instructions cannot be empty."),
+  name: z.string().trim().min(1, "Enter a name for this Agent."),
+  instructions: z.string().trim().min(1, "Instructions cannot be empty."),
   actionIds: z.array(z.string()),
   knowledgeIds: z.array(z.string()),
 });

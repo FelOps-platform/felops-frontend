@@ -1,6 +1,9 @@
 import { Suspense } from "react";
 import { AppFrame } from "../_components/app-frame";
-import { WorkspaceSidebar, WorkspaceSidebarFallback } from "../_components/workspace-sidebar";
+import {
+  WorkspaceSidebar,
+  WorkspaceSidebarFallback,
+} from "../_components/workspace-sidebar";
 
 async function SidebarWrapper({
   params,

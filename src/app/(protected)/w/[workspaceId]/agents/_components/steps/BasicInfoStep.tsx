@@ -42,10 +42,11 @@ export function BasicInfoStep() {
                 if (errors.name) clearErrors("name");
               },
             })}
-            className={`w-full px-4 py-2.5 text-sm  text-neutral-900 border rounded-xl placeholder:text-neutral-400 transition-all ${errors.name
-              ? "border-wrong-500 bg-wrong-50/10 focus:border-wrong-500 focus:ring-2 focus:ring-wrong-500/20 focus:outline-none"
-              : "border-neutral-300 hover:border-neutral-400 focus:border-secondary-500 focus:ring-2 focus:ring-secondary-500/20 focus:outline-none"
-              }`}
+            className={`w-full px-4 py-2.5 text-sm  text-neutral-900 border rounded-xl placeholder:text-neutral-400 transition-all ${
+              errors.name
+                ? "border-wrong-500 bg-wrong-50/10 focus:border-wrong-500 focus:ring-2 focus:ring-wrong-500/20 focus:outline-none"
+                : "border-neutral-300 hover:border-neutral-400 focus:border-secondary-500 focus:ring-2 focus:ring-secondary-500/20 focus:outline-none"
+            }`}
           />
           {errors.name && (
             <p
@@ -78,10 +79,11 @@ export function BasicInfoStep() {
                 if (errors.instructions) clearErrors("instructions");
               },
             })}
-            className={`w-full px-4 py-3 text-sm text-neutral-900 border rounded-xl placeholder:text-neutral-400 resize-none leading-relaxed transition-all ${errors.instructions
-              ? "border-wrong-500 bg-wrong-50/10 focus:border-wrong-500 focus:ring-2 focus:ring-wrong-500/20 focus:outline-none"
-              : "border-neutral-300 hover:border-neutral-400 focus:border-secondary-500 focus:ring-2 focus:ring-secondary-500/20 focus:outline-none"
-              }`}
+            className={`w-full px-4 py-3 text-sm text-neutral-900 border rounded-xl placeholder:text-neutral-400 resize-none leading-relaxed transition-all ${
+              errors.instructions
+                ? "border-wrong-500 bg-wrong-50/10 focus:border-wrong-500 focus:ring-2 focus:ring-wrong-500/20 focus:outline-none"
+                : "border-neutral-300 hover:border-neutral-400 focus:border-secondary-500 focus:ring-2 focus:ring-secondary-500/20 focus:outline-none"
+            }`}
           />
           {errors.instructions && (
             <p

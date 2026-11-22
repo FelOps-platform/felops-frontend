@@ -6,7 +6,11 @@ import { ChevronLeft } from "lucide-react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { STEPS, agentFormSchema, type AgentFormData } from "./agent-form.schema";
+import {
+  STEPS,
+  agentFormSchema,
+  type AgentFormData,
+} from "./agent-form.schema";
 import { StepperProgress } from "./stepper-progress";
 import { StepperNavigation } from "./stepper-navigation";
 import { BasicInfoStep } from "./steps/BasicInfoStep";
