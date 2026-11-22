@@ -16,7 +16,7 @@ async function AgentsContent({
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-secondary-50">
             Agents
           </h1>
-          <p className="text-xs sm:text-sm text-neutral-400 mt-1">
+          <p className="text-xs sm:text-sm text-neutral-400 mt-1 max-w-xl">
             Configure Agents with clear instructions and approved Workspace
             Actions.
           </p>
@@ -24,10 +24,10 @@ async function AgentsContent({
 
         <Link
           href={`/w/${workspaceId}/agents/new`}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary-500 text-secondary-50 font-semibold text-xs sm:text-sm hover:bg-secondary-100 transition-colors shadow-lg cursor-pointer self-start sm:self-auto shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary-500 hover:bg-secondary-600 text-secondary-50 font-semibold text-xs sm:text-sm transition-all shadow-md active:scale-[0.99] cursor-pointer self-start sm:self-auto shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span>create Agent</span>
+          <span>Create Agent</span>
         </Link>
       </div>
     </div>

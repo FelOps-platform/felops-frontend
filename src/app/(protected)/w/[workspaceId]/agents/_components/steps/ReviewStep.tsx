@@ -12,10 +12,10 @@ export function ReviewStep() {
     <div className="space-y-6">
       {/* Step Header */}
       <div>
-        <h2 className="text-xl text-secondary-950 font-bold tracking-tight">
+        <h2 className="text-xl font-bold text-neutral-900 tracking-tight">
           Review & save
         </h2>
-        <p className="text-sm text-secondary-400 mt-1">
+        <p className="text-sm text-secondary-500 mt-1">
           Confirm configuration and publish your new agent.
         </p>
       </div>
@@ -45,7 +45,7 @@ export function ReviewStep() {
               <span className="text-xs font-semibold text-neutral-400 block uppercase tracking-wider">
                 Instructions
               </span>
-              <p className="text-neutral-700 whitespace-pre-wrap leading-relaxed mt-0.5 text-xs sm:text-sm bg-neutral-50 p-3 rounded-xl border border-neutral-100 max-h-40 overflow-y-auto">
+              <p className="text-neutral-800 whitespace-pre-wrap leading-relaxed mt-0.5 text-xs sm:text-sm bg-neutral-50 p-3 rounded-xl border border-neutral-200 max-h-40 overflow-y-auto">
                 {values.instructions || "—"}
               </p>
             </div>
@@ -61,7 +61,7 @@ export function ReviewStep() {
                 <h3 className="text-sm font-bold text-neutral-900">
                   Workspace Actions
                 </h3>
-                <p className="text-xs text-neutral-400 mt-0.5">
+                <p className="text-xs text-neutral-500 mt-0.5">
                   {values.actionIds?.length || 0} Actions selected
                 </p>
               </div>
@@ -92,7 +92,7 @@ export function ReviewStep() {
                 <h3 className="text-sm font-bold text-neutral-900">
                   Knowledge Sources
                 </h3>
-                <p className="text-xs text-neutral-400 mt-0.5">
+                <p className="text-xs text-neutral-500 mt-0.5">
                   {values.knowledgeIds?.length || 0} Sources connected
                 </p>
               </div>
