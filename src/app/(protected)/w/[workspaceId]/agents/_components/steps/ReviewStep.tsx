@@ -12,10 +12,10 @@ export function ReviewStep() {
     <div className="space-y-6">
       {/* Step Header */}
       <div>
-        <h2 className="text-xl text-secondary-950 font-bold tracking-tight">
+        <h2 className="text-xl text-secondary-50 font-bold tracking-tight">
           Review & save
         </h2>
-        <p className="text-sm text-secondary-400 mt-1">
+        <p className="text-sm text-neutral-400 mt-1">
           Confirm configuration and publish your new agent.
         </p>
       </div>
@@ -23,10 +23,10 @@ export function ReviewStep() {
       {/* Review Details Card */}
       <div className="space-y-4">
         {/* Basic Info Summary */}
-        <div className="p-5 rounded-2xl border border-neutral-200 bg-white shadow-2xs space-y-4">
-          <div className="flex items-center gap-2.5 pb-3 border-b border-neutral-100">
+        <div className="p-5 rounded-2xl border border-secondary-50/10 bg-secondary-950/40 shadow-2xs space-y-4">
+          <div className="flex items-center gap-2.5 pb-3 border-b border-secondary-50/10">
             <Bot className="w-5 h-5 text-secondary-500" />
-            <h3 className="text-sm font-bold text-neutral-900">
+            <h3 className="text-sm font-bold text-secondary-50">
               Basic Information
             </h3>
           </div>
@@ -36,7 +36,7 @@ export function ReviewStep() {
               <span className="text-xs font-semibold text-neutral-400 block uppercase tracking-wider">
                 Agent Name
               </span>
-              <p className="text-neutral-900 font-medium mt-0.5">
+              <p className="text-secondary-100 font-medium mt-0.5">
                 {values.name || "—"}
               </p>
             </div>
@@ -45,7 +45,7 @@ export function ReviewStep() {
               <span className="text-xs font-semibold text-neutral-400 block uppercase tracking-wider">
                 Instructions
               </span>
-              <p className="text-neutral-700 whitespace-pre-wrap leading-relaxed mt-0.5 text-xs sm:text-sm bg-neutral-50 p-3 rounded-xl border border-neutral-100 max-h-40 overflow-y-auto">
+              <p className="text-secondary-200 whitespace-pre-wrap leading-relaxed mt-0.5 text-xs sm:text-sm bg-secondary-950/80 p-3 rounded-xl border border-secondary-50/10 max-h-40 overflow-y-auto">
                 {values.instructions || "—"}
               </p>
             </div>
@@ -53,12 +53,12 @@ export function ReviewStep() {
         </div>
 
         {/* Workspace Actions Summary */}
-        <div className="p-5 rounded-2xl border border-neutral-200 bg-white shadow-2xs space-y-3">
+        <div className="p-5 rounded-2xl border border-secondary-50/10 bg-secondary-950/40 shadow-2xs space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <Zap className="w-5 h-5 text-secondary-500" />
               <div>
-                <h3 className="text-sm font-bold text-neutral-900">
+                <h3 className="text-sm font-bold text-secondary-50">
                   Workspace Actions
                 </h3>
                 <p className="text-xs text-neutral-400 mt-0.5">
@@ -69,11 +69,11 @@ export function ReviewStep() {
           </div>
 
           {values.actionIds && values.actionIds.length > 0 && (
-            <div className="flex flex-wrap gap-2 pt-2 border-t border-neutral-100 max-h-36 overflow-y-auto pr-1">
+            <div className="flex flex-wrap gap-2 pt-2 border-t border-secondary-50/10 max-h-36 overflow-y-auto pr-1">
               {values.actionIds.map((id) => (
                 <span
                   key={id}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-neutral-100 text-neutral-800 border border-neutral-200 capitalize"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-secondary-900/80 text-secondary-100 border border-secondary-50/15 capitalize"
                 >
                   <Zap className="w-3 h-3 text-secondary-500" />
                   {id.replace("act_", "").replace(/_/g, " ")}
@@ -84,12 +84,12 @@ export function ReviewStep() {
         </div>
 
         {/* Knowledge Sources Summary */}
-        <div className="p-5 rounded-2xl border border-neutral-200 bg-white shadow-2xs">
+        <div className="p-5 rounded-2xl border border-secondary-50/10 bg-secondary-950/40 shadow-2xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <Database className="w-5 h-5 text-secondary-500" />
               <div>
-                <h3 className="text-sm font-bold text-neutral-900">
+                <h3 className="text-sm font-bold text-secondary-50">
                   Knowledge Sources
                 </h3>
                 <p className="text-xs text-neutral-400 mt-0.5">

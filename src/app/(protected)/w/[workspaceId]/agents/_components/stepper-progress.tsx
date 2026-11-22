@@ -46,7 +46,7 @@ export function StepperProgress({
               <div
                 aria-hidden="true"
                 className={`absolute left-[29px] top-[48px] w-[2px] h-[calc(100%-24px)] transition-colors pointer-events-none ${
-                  currentStep > step.id ? "bg-emerald-500" : "bg-neutral-800"
+                  currentStep > step.id ? "bg-right-500" : "bg-neutral-800"
                 }`}
               />
             )}
@@ -55,7 +55,7 @@ export function StepperProgress({
             <div
               className={`w-9 h-9 rounded-full flex items-center justify-center font-semibold text-xs shrink-0 transition-all z-10 ${
                 isCompleted
-                  ? "bg-right-700 text-secondary-950 shadow-xs"
+                  ? "bg-right-600 text-secondary-950 font-bold shadow-xs"
                   : isCurrent
                     ? "bg-secondary-600 text-secondary-50 shadow-md shadow-secondary-500/25 ring-4 ring-secondary-500/20"
                     : "bg-neutral-900 border border-neutral-700 text-neutral-400"

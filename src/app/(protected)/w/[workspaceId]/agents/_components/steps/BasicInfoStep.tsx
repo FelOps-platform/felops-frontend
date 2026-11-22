@@ -14,10 +14,10 @@ export function BasicInfoStep() {
     <div className="space-y-6">
       {/* Step Header */}
       <div>
-        <h2 className="text-xl text-secondary-950  tracking-tight">
+        <h2 className="text-xl font-bold text-secondary-50 tracking-tight">
           Basic information
         </h2>
-        <p className="text-sm text-secondary-400 mt-1">
+        <p className="text-sm text-neutral-400 mt-1">
           Give the Agent a clear name and describe how it should work.
         </p>
       </div>
@@ -27,7 +27,7 @@ export function BasicInfoStep() {
         <div className="space-y-1.5">
           <label
             htmlFor="agent-name"
-            className="block text-sm  text-neutral-900"
+            className="block text-xs font-semibold text-neutral-300"
           >
             Agent name <span className="text-secondary-500">*</span>
           </label>
@@ -42,16 +42,16 @@ export function BasicInfoStep() {
                 if (errors.name) clearErrors("name");
               },
             })}
-            className={`w-full px-4 py-2.5 text-sm  text-neutral-900 border rounded-xl placeholder:text-neutral-400 transition-all ${
+            className={`w-full px-4 py-2.5 text-sm rounded-xl transition-all placeholder:text-neutral-500 bg-secondary-950/60 text-secondary-50 border focus:outline-none focus:ring-2 ${
               errors.name
-                ? "border-wrong-500 bg-wrong-50/10 focus:border-wrong-500 focus:ring-2 focus:ring-wrong-500/20 focus:outline-none"
-                : "border-neutral-300 hover:border-neutral-400 focus:border-secondary-500 focus:ring-2 focus:ring-secondary-500/20 focus:outline-none"
+                ? "border-wrong-500 bg-wrong-500/5 focus:border-wrong-500 focus:ring-wrong-500/20"
+                : "border-secondary-50/20 hover:border-secondary-50/30 focus:border-secondary-500 focus:ring-secondary-500/20"
             }`}
           />
           {errors.name && (
             <p
               id="agent-name-error"
-              className="text-xs font-medium text-wrong-500 mt-1"
+              className="text-xs font-medium text-wrong-400 mt-1"
             >
               {String(errors.name.message)}
             </p>
@@ -62,7 +62,7 @@ export function BasicInfoStep() {
         <div className="space-y-1.5">
           <label
             htmlFor="agent-instructions"
-            className="block text-sm  text-neutral-900"
+            className="block text-xs font-semibold text-neutral-300"
           >
             Instructions <span className="text-secondary-500">*</span>
           </label>
@@ -79,16 +79,16 @@ export function BasicInfoStep() {
                 if (errors.instructions) clearErrors("instructions");
               },
             })}
-            className={`w-full px-4 py-3 text-sm text-neutral-900 border rounded-xl placeholder:text-neutral-400 resize-none leading-relaxed transition-all ${
+            className={`w-full px-4 py-3 text-sm rounded-xl transition-all placeholder:text-neutral-500 bg-secondary-950/60 text-secondary-50 border resize-none leading-relaxed focus:outline-none focus:ring-2 ${
               errors.instructions
-                ? "border-wrong-500 bg-wrong-50/10 focus:border-wrong-500 focus:ring-2 focus:ring-wrong-500/20 focus:outline-none"
-                : "border-neutral-300 hover:border-neutral-400 focus:border-secondary-500 focus:ring-2 focus:ring-secondary-500/20 focus:outline-none"
+                ? "border-wrong-500 bg-wrong-500/5 focus:border-wrong-500 focus:ring-wrong-500/20"
+                : "border-secondary-50/20 hover:border-secondary-50/30 focus:border-secondary-500 focus:ring-secondary-500/20"
             }`}
           />
           {errors.instructions && (
             <p
               id="agent-instructions-error"
-              className="text-xs font-medium text-wrong-500 mt-1"
+              className="text-xs font-medium text-wrong-400 mt-1"
             >
               {String(errors.instructions.message)}
             </p>

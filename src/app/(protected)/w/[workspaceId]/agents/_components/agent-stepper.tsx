@@ -97,10 +97,10 @@ export function AgentStepperForm({ workspaceId }: AgentStepperFormProps) {
         <div className="flex items-center gap-3.5">
           <Link
             href={`/w/${workspaceId}/agents`}
-            className="w-10 h-10 rounded-xl border border-slate-200/80 bg-white flex items-center justify-center text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all shadow-xs"
+            className="w-10 h-10 rounded-xl border border-secondary-50/20 bg-secondary-900/60 flex items-center justify-center text-secondary-200 hover:bg-secondary-900 hover:text-secondary-50 transition-all shadow-xs"
             title="Back to Agents"
           >
-            <ChevronLeft className="w-5 h-5" strokeWidth={7} />
+            <ChevronLeft className="w-5 h-5" strokeWidth={2.5} />
           </Link>
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-secondary-50 tracking-tight">
@@ -124,9 +124,9 @@ export function AgentStepperForm({ workspaceId }: AgentStepperFormProps) {
           />
         </div>
 
-        {/* Right Content Card Container */}
+        {/* Right Content Card Container - Dark surface matching app shell */}
         <FormProvider {...methods}>
-          <div className="lg:col-span-8 bg-neutral-50 border border-neutral-50 rounded-2xl p-6 sm:p-8 shadow-xs">
+          <div className="lg:col-span-8 bg-secondary-900/40 border border-secondary-50/10 rounded-2xl p-6 sm:p-8 shadow-xs backdrop-blur-xs text-secondary-50">
             <form
               onSubmit={(e) => {
                 if (currentStep < STEPS.length) {
