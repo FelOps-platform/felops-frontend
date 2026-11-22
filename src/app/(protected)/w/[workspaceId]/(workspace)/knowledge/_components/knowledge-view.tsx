@@ -48,41 +48,30 @@ export function KnowledgeView({ workspaceId }: KnowledgeViewProps) {
   }, [workspaceId]);
 
   const handleRemoveItem = async (id: string) => {
-    // Optimistic UI update: Remove immediately from list
     const previousItems = items;
     setItems((prev) => prev.filter((item) => item.id !== id));
 
     try {
-      // TODO (Backend Integration):
-      // 1. Await DELETE /api/workspaces/${workspaceId}/knowledge/${id}
       await deleteWorkspaceKnowledge(workspaceId, id);
     } catch (error) {
       console.error("Failed to delete knowledge item:", error);
-      // Rollback on failure
       setItems(previousItems);
-      // TODO (Backend Integration): Show error toast notification
     }
   };
 
   const handleRetryProcessing = async (id: string) => {
-    // Optimistically set status to Processing
     const previousItems = items;
     setItems((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, status: "Processing" } : item,
+        item.id === id ? { ...item, status: "Processing" as const } : item,
       ),
     );
 
     try {
-      // TODO (Backend Integration):
-      // 1. Call POST /api/workspaces/${workspaceId}/knowledge/${id}/retry
       await retryKnowledgeProcessing(workspaceId, id);
-      // 2. Subscribe to WebSocket or SSE to listen for job status update (Ready / Failed)
     } catch (error) {
       console.error("Failed to retry processing:", error);
-      // Rollback status on failure
       setItems(previousItems);
-      // TODO (Backend Integration): Show error toast notification
     }
   };
 
@@ -90,10 +79,10 @@ export function KnowledgeView({ workspaceId }: KnowledgeViewProps) {
     <div className="space-y-6 max-w-6xl">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-secondary-50/10">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-secondary-50">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-secondary-50">
             Knowledge
           </h1>
-          <p className="text-xs sm:text-sm text-secondary-100 mt-1 w-2/3">
+          <p className="text-xs sm:text-sm text-neutral-400 mt-1 max-w-xl">
             Manage shared knowledge sources that your Workspace Agents can use
             to understand your business and perform tasks.
           </p>

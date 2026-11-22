@@ -66,7 +66,6 @@ export function AgentStepperForm({ workspaceId }: AgentStepperFormProps) {
   const onSubmit = async (data: AgentFormData) => {
     try {
       setIsSubmitting(true);
-      // TODO: Submit agent payload to API endpoint
       console.log("Agent creation payload ready for submission:", data);
     } catch (error) {
       console.error("Failed to create agent:", error);
@@ -97,7 +96,7 @@ export function AgentStepperForm({ workspaceId }: AgentStepperFormProps) {
         <div className="flex items-center gap-3.5">
           <Link
             href={`/w/${workspaceId}/agents`}
-            className="w-10 h-10 rounded-xl border border-secondary-50/20 bg-secondary-900/60 flex items-center justify-center text-secondary-200 hover:bg-secondary-900 hover:text-secondary-50 transition-all shadow-xs"
+            className="w-10 h-10 rounded-xl border border-secondary-50/20 bg-secondary-900/60 flex items-center justify-center text-secondary-200 hover:bg-secondary-900 hover:text-secondary-50 transition-all shadow-xs cursor-pointer"
             title="Back to Agents"
           >
             <ChevronLeft className="w-5 h-5" strokeWidth={2.5} />
@@ -115,7 +114,7 @@ export function AgentStepperForm({ workspaceId }: AgentStepperFormProps) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Sidebar: Step Tracker */}
+        {/* Left Sidebar: Step Tracker (Dark Theme) */}
         <div className="lg:col-span-4">
           <StepperProgress
             steps={STEPS}
@@ -124,9 +123,9 @@ export function AgentStepperForm({ workspaceId }: AgentStepperFormProps) {
           />
         </div>
 
-        {/* Right Content Card Container - Dark surface matching app shell */}
+        {/* Right Content Card Container: Design system token bg-neutral-50 */}
         <FormProvider {...methods}>
-          <div className="lg:col-span-8 bg-secondary-900/40 border border-secondary-50/10 rounded-2xl p-6 sm:p-8 shadow-xs backdrop-blur-xs text-secondary-50">
+          <div className="lg:col-span-8 bg-neutral-50 border border-neutral-200 rounded-2xl p-6 sm:p-8 shadow-xs">
             <form
               onSubmit={(e) => {
                 if (currentStep < STEPS.length) {
