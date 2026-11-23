@@ -3,58 +3,39 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
-import { resetPasswordSchema } from "../schemas/auth";
+import {
+  resetPasswordSchema,
+  type ResetPasswordInput,
+} from "../schemas/auth";
 
 function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
 
-  const [formData, setFormData] = useState({
-    password: "",
-    confirmPassword: "",
-  });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors, setErrors] = useState<{
-    password?: string;
-    confirmPassword?: string;
-    general?: string;
-  }>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [generalError, setGeneralError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ResetPasswordInput>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+    mode: "onTouched",
+  });
 
-    if (errors[name as keyof typeof errors] || errors.general) {
-      setErrors((prev) => ({ ...prev, [name]: undefined, general: undefined }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrors({});
-
-    const validationResult = resetPasswordSchema.safeParse(formData);
-    if (!validationResult.success) {
-      const fieldErrors: {
-        password?: string;
-        confirmPassword?: string;
-      } = {};
-      validationResult.error.issues.forEach((err) => {
-        const fieldName = err.path[0] as keyof typeof fieldErrors;
-        if (fieldName) {
-          fieldErrors[fieldName] = err.message;
-        }
-      });
-      setErrors(fieldErrors);
-      return;
-    }
-
-    setIsLoading(true);
+  const onSubmit = async (data: ResetPasswordInput) => {
+    setGeneralError(null);
     try {
       console.log(
         "Submitting password reset for email:",
@@ -65,7 +46,7 @@ function ResetPasswordForm() {
       // TODO: Call backend API to reset password
       // await authService.resetPassword({
       //   email,
-      //   password: validationResult.data.password,
+      //   password: data.password,
       // });
 
       setIsSuccess(true);
@@ -76,11 +57,9 @@ function ResetPasswordForm() {
         router.push("/sign-in?reset=true");
       }, 1500);
     } catch (err: any) {
-      setErrors({
-        general: err?.message || "Failed to reset password. Please try again.",
-      });
-    } finally {
-      setIsLoading(false);
+      setGeneralError(
+        err?.message || "Failed to reset password. Please try again.",
+      );
     }
   };
 
@@ -126,14 +105,14 @@ function ResetPasswordForm() {
         </p>
       </div>
 
-      {errors.general && (
+      {generalError && (
         <div className="mb-4 p-3 rounded-xl bg-wrong-500/10 border border-wrong-500/20 text-wrong-400 text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{errors.general}</span>
+          <span>{generalError}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* New Password */}
         <div className="space-y-1.5">
           <label className="block text-xs font-medium text-neutral-300">
@@ -142,10 +121,8 @@ function ResetPasswordForm() {
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
               placeholder="••••••••••••"
+              {...register("password")}
               className={`w-full px-4 py-3 rounded-xl bg-neutral-900/40 border text-secondary-50 placeholder-neutral-500 text-sm focus:outline-none transition-colors pr-12 ${
                 errors.password
                   ? "border-wrong-500/80 focus:border-wrong-500"
@@ -156,7 +133,7 @@ function ResetPasswordForm() {
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? "Hide password" : "Show password"}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-secondary-50 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-secondary-50 transition-colors cursor-pointer"
             >
               {showPassword ? (
                 <EyeOff className="w-4 h-4" />
@@ -165,8 +142,10 @@ function ResetPasswordForm() {
               )}
             </button>
           </div>
-          {errors.password && (
-            <p className="text-xs text-wrong-400 mt-1">{errors.password}</p>
+          {errors.password?.message && (
+            <p className="text-xs text-wrong-400 mt-1">
+              {errors.password.message}
+            </p>
           )}
         </div>
 
@@ -178,10 +157,8 @@ function ResetPasswordForm() {
           <div className="relative">
             <input
               type={showConfirmPassword ? "text" : "password"}
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
               placeholder="••••••••••••"
+              {...register("confirmPassword")}
               className={`w-full px-4 py-3 rounded-xl bg-neutral-900/40 border text-secondary-50 placeholder-neutral-500 text-sm focus:outline-none transition-colors pr-12 ${
                 errors.confirmPassword
                   ? "border-wrong-500/80 focus:border-wrong-500"
@@ -194,7 +171,7 @@ function ResetPasswordForm() {
               aria-label={
                 showConfirmPassword ? "Hide password" : "Show password"
               }
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-secondary-50 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-secondary-50 transition-colors cursor-pointer"
             >
               {showConfirmPassword ? (
                 <EyeOff className="w-4 h-4" />
@@ -203,9 +180,9 @@ function ResetPasswordForm() {
               )}
             </button>
           </div>
-          {errors.confirmPassword && (
+          {errors.confirmPassword?.message && (
             <p className="text-xs text-wrong-400 mt-1">
-              {errors.confirmPassword}
+              {errors.confirmPassword.message}
             </p>
           )}
         </div>
@@ -213,10 +190,10 @@ function ResetPasswordForm() {
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isSubmitting}
           className="w-full mt-2 py-3.5 px-4 rounded-xl bg-secondary-50 text-secondary-950 font-semibold text-sm hover:bg-secondary-100 transition-colors shadow-lg disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
         >
-          {isLoading ? (
+          {isSubmitting ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
               <span>Resetting Password...</span>

@@ -1,9 +1,10 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { mockWorkspaces, getWorkspaceInitials } from "@/data/mock-workspaces";
 import {
   LayoutDashboard,
   Bot,
@@ -80,24 +81,10 @@ function WorkspaceSidebarContent({
 }: WorkspaceSidebarProps) {
   const pathname = usePathname();
 
-  // TODO: Fetch or sync from Workspace Context / Backend API
-  const [workspaces] = useState([
-    { id: "ws-ai-production", name: "AI Production Hub" },
-    { id: "ws-enterprise-ops", name: "Enterprise Operations" },
-    { id: "ws-customer-fleet", name: "Customer Support Fleet" },
-    { id: "amr-khaled", name: "Amr Khaled" },
-  ]);
-
-  // Find workspace by ID, or fallback gracefully if ID not found yet
-  const currentWorkspace = workspaces.find((w) => w.id === workspaceId);
+  // Find workspace by ID from centralized mock data, or fallback gracefully if ID not found yet
+  const currentWorkspace = mockWorkspaces.find((w) => w.id === workspaceId);
   const activeWorkspaceName = currentWorkspace?.name || "Workspace";
-  const workspaceInitials = activeWorkspaceName
-    .trim()
-    .split(/\s+/)
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 3);
+  const workspaceInitials = getWorkspaceInitials(activeWorkspaceName);
 
   return (
     <aside className="w-70 h-screen bg-secondary-950 border-r border-secondary-50/10 flex flex-col justify-between shrink-0 select-none z-30">
