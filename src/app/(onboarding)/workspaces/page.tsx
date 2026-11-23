@@ -1,44 +1,9 @@
 import Link from "next/link";
 import { Plus, ChevronRight } from "lucide-react";
+import { type Workspace } from "@/types/workspace";
+import { mockWorkspaces, getWorkspaceInitials } from "@/data/mock-workspaces";
 
-export interface Workspace {
-  id: string;
-  name: string;
-  agentsCount: number;
-  role: "Owner" | "Admin" | "Member";
-}
-
-const getWorkspaceInitials = (name: string) => {
-  return name
-    .trim()
-    .split(/\s+/)
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 3);
-};
-
-// TODO: Fetch workspaces dynamically from backend API (e.g., workspaceService.getWorkspaces())
-const mockWorkspaces: Workspace[] = [
-  {
-    id: "ws-ai-production",
-    name: "AI Production Hub",
-    agentsCount: 8,
-    role: "Owner",
-  },
-  {
-    id: "ws-enterprise-ops",
-    name: "Enterprise Operations",
-    agentsCount: 4,
-    role: "Admin",
-  },
-  {
-    id: "ws-customer-fleet",
-    name: "Customer Support Fleet",
-    agentsCount: 12,
-    role: "Member",
-  },
-];
+export type { Workspace };
 
 export default function WorkspacesPage() {
   const workspaces = mockWorkspaces;
