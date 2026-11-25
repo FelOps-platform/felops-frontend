@@ -256,13 +256,13 @@ export type AddKnowledgeFormData = z.infer<typeof addKnowledgeSchema>;
 ## Acceptance Criteria
 
 ### Phase 1 (PR #2): Domain Layer & UI Primitives
-- [ ] Create domain directory `src/features/knowledge/` with `types.ts`, `schema.ts`, `service.ts`, `mappers.ts`, and `index.ts`.
-- [ ] Implement strict union types `KnowledgeStatus` (`'Ready' | 'Processing' | 'Failed'`) and `KnowledgeType` (`'PDF' | 'DOCX' | 'TXT' | 'URL'`) in `types.ts`.
-- [ ] Implement `KnowledgeItem` with separated `source` label and optional `openUrl`, and `assignedAgents` as `{ id: string; name: string }[]`.
-- [ ] Refactor mock service to a private, workspace-scoped store returning immutable deep copies, supporting query parameters, and throwing typed errors (409, 413, 422, 503, 404).
-- [ ] Extend `src/components/ui/button.tsx`, `input.tsx`, and `modal.tsx` with `surface="light" | "dark"` using `globals.css` tokens only.
-- [ ] Extract shared `WizardShell` and `StepperProgress` components to `src/components/common/`.
-- [ ] Update `src/app/(protected)/w/[workspaceId]/agents/_components/steps/KnowledgeStep.tsx` to consume `src/features/knowledge`.
+- [x] Create domain directory `src/features/knowledge/` with `types.ts`, `schema.ts`, `service.ts`, `mappers.ts`, and `index.ts`.
+- [x] Implement strict union types `KnowledgeStatus` (`'Ready' | 'Processing' | 'Failed'`) and `KnowledgeType` (`'PDF' | 'DOCX' | 'TXT' | 'URL'`) in `types.ts`.
+- [x] Implement `KnowledgeItem` with separated `source` label and optional `openUrl`, and `assignedAgents` as `{ id: string; name: string }[]`.
+- [x] Refactor mock service to a private, workspace-scoped store returning immutable deep copies, supporting query parameters, and throwing typed errors (409, 413, 422, 503, 404).
+- [x] Extend `src/components/ui/button.tsx`, `input.tsx`, and `modal.tsx` with `surface="light" | "dark"` using `globals.css` tokens only.
+- [x] Extract shared `WizardShell` and `StepperProgress` components to `src/components/common/`.
+- [x] Update `src/app/(protected)/w/[workspaceId]/agents/_components/steps/KnowledgeStep.tsx` to consume `src/features/knowledge`.
 
 ### Phase 2 (PR #3): Table A11y, States & Error Handling
 - [ ] Split `use-knowledge-table.tsx` into `knowledge-ui.tsx`, `use-knowledge-filters.ts`, and `use-knowledge-modal.ts`.
