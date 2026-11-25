@@ -275,13 +275,13 @@ export type AddKnowledgeFormData = z.infer<typeof addKnowledgeSchema>;
 - [x] Update `KnowledgeActionModal` to show affected `assignedAgents` in remove mode and richer error details in availability mode.
 
 ### Phase 3 (PR #4): Wizard RHF/Zod & Polling
-- [ ] Refactor `add-knowledge-form.tsx` to use `react-hook-form` and `@hookform/resolvers/zod` with `addKnowledgeSchema` discriminated union.
-- [ ] Validate file upload MIME types (`application/pdf`, `application/vnd.openxmlformats-officedocument.wordprocessingml.document`, `text/plain`) and `<= 10MB` size limit for both file picker and drag-and-drop.
-- [ ] Validate and normalize website URLs with shared `normalizeUrl()` and `z.string().url()`.
-- [ ] Implement step-based field array validation with `trigger(fields)` and disabled submit on `formState.isSubmitting`.
-- [ ] Auto-fill source name on Step 2 -> 3 transition and reset auto-filled name when toggling `sourceType` in Step 1.
-- [ ] Implement accessible radio group for Step 1 source type selection cards.
-- [ ] Make dropzone keyboard-focusable (`tabIndex={0}`, `Enter`/`Space`) with visual drag-over state indicator.
-- [ ] Implement `use-knowledge-polling.ts` to poll every 3–5s while items are `Processing`, pausing when tab is hidden.
-- [ ] Implement toast feedback for `409 DUPLICATE_SOURCE` errors showing existing source name and status.
-- [ ] Remove all hardcoded hex values, arbitrary classes, unused animations, and `console.log` calls across all knowledge components.
+- [x] Refactor `add-knowledge-form.tsx` to use `react-hook-form` and `@hookform/resolvers/zod` with `addKnowledgeSchema` discriminated union.
+- [x] Validate file upload MIME types (`application/pdf`, `application/vnd.openxmlformats-officedocument.wordprocessingml.document`, `text/plain`) and `<= 10MB` size limit for both file picker and drag-and-drop.
+- [x] Validate and normalize website URLs with shared `normalizeUrl()` and `z.string().url()`.
+- [x] Implement step-based field array validation with `trigger(fields)` and disabled submit on `formState.isSubmitting`.
+- [x] Auto-fill source name on Step 2 -> 3 transition and reset auto-filled name when toggling `sourceType` in Step 1.
+- [x] Implement accessible radio group for Step 1 source type selection cards.
+- [x] Make dropzone keyboard-focusable (`tabIndex={0}`, `Enter`/`Space`) with visual drag-over state indicator.
+- [x] Implement `use-knowledge-polling.ts` to poll every 3–5s while items are `Processing`, pausing when tab is hidden.
+- [x] Implement toast feedback for `409 DUPLICATE_SOURCE` errors showing existing source name and status.
+- [x] Remove all hardcoded hex values, arbitrary classes, unused animations, and `console.log` calls across all knowledge components.
