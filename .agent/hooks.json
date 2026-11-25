@@ -1,0 +1,15 @@
+{
+  "doc-reminder": {
+    "PostToolUse": [
+      {
+        "matcher": "edit_file|write_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .agent/scripts/doc-reminder.mjs"
+          }
+        ]
+      }
+    ]
+  }
+}
