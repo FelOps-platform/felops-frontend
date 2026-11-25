@@ -474,7 +474,7 @@ export function AddKnowledgeForm({ workspaceId }: AddKnowledgeFormProps) {
                   tabIndex={sourceType === "file" ? 0 : -1}
                   onClick={() => handleSourceTypeChange("file")}
                   onKeyDown={(e) => handleRadioKeyDown(e, "file")}
-                  className={`flex flex-col justify-between p-5 rounded-2xl border text-left transition-all cursor-pointer min-h-[140px] outline-none focus-visible:ring-2 focus-visible:ring-secondary-500/40 ${
+                  className={`flex flex-col justify-between p-5 rounded-2xl border text-left transition-all cursor-pointer min-h-36 outline-none focus-visible:ring-2 focus-visible:ring-secondary-500/40 ${
                     sourceType === "file"
                       ? "border-secondary-500 bg-neutral-100/90 shadow-xs ring-1 ring-secondary-500/30"
                       : "border-neutral-200 bg-neutral-100/40 hover:border-neutral-300 hover:bg-neutral-100/70 text-neutral-900"
@@ -511,7 +511,7 @@ export function AddKnowledgeForm({ workspaceId }: AddKnowledgeFormProps) {
                   tabIndex={sourceType === "website" ? 0 : -1}
                   onClick={() => handleSourceTypeChange("website")}
                   onKeyDown={(e) => handleRadioKeyDown(e, "website")}
-                  className={`flex flex-col justify-between p-5 rounded-2xl border text-left transition-all cursor-pointer min-h-[140px] outline-none focus-visible:ring-2 focus-visible:ring-secondary-500/40 ${
+                  className={`flex flex-col justify-between p-5 rounded-2xl border text-left transition-all cursor-pointer min-h-36 outline-none focus-visible:ring-2 focus-visible:ring-secondary-500/40 ${
                     sourceType === "website"
                       ? "border-secondary-500 bg-neutral-100/90 shadow-xs ring-1 ring-secondary-500/30"
                       : "border-neutral-200 bg-neutral-100/40 hover:border-neutral-300 hover:bg-neutral-100/70 text-neutral-900"
@@ -721,7 +721,7 @@ export function AddKnowledgeForm({ workspaceId }: AddKnowledgeFormProps) {
                     className="text-xs font-semibold text-neutral-900 flex items-center justify-between"
                   >
                     <span>Source Name</span>
-                    <span className="text-[11px] text-secondary-500 font-medium">
+                    <span className="text-xs text-secondary-500 font-medium">
                       Required
                     </span>
                   </label>
@@ -757,7 +757,7 @@ export function AddKnowledgeForm({ workspaceId }: AddKnowledgeFormProps) {
                     >
                       Description
                     </label>
-                    <span className="text-[11px] text-neutral-400 font-normal">
+                    <span className="text-xs text-neutral-400 font-normal">
                       Optional
                     </span>
                   </div>

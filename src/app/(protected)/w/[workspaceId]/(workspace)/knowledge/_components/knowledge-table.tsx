@@ -268,7 +268,7 @@ export function KnowledgeTable({
                                 </span>
                               )}
                             </div>
-                            <span className="text-[11px] text-neutral-500 truncate max-w-xs">
+                            <span className="text-xs text-neutral-500 truncate max-w-xs">
                               {item.source}
                             </span>
                           </div>
