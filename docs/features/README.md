@@ -6,7 +6,7 @@ Index of spec-driven development documents under `docs/features/`.
 
 | Feature | Spec File | Status |
 | :--- | :--- | :--- |
-| _(none yet)_ | Run `/design <feature>` to create one | — |
+| Knowledge Base Management | [knowledge.md](knowledge.md) | Draft |
 
 ## Blank Spec Template
 

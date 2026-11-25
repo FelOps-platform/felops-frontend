@@ -9,7 +9,7 @@ import {
   Search,
   ExternalLink,
 } from "lucide-react";
-import type { KnowledgeItem } from "../types/knowledge.types";
+import type { KnowledgeItem } from "@/features/knowledge";
 import { useKnowledgeTable } from "../hooks/use-knowledge-table";
 import { KnowledgeToolbar } from "./knowledge-toolbar";
 import { KnowledgeActionModal } from "./KnowledgeActionModal";

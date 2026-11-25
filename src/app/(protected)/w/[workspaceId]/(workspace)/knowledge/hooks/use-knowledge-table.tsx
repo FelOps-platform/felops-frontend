@@ -6,7 +6,7 @@ import type {
   KnowledgeItem,
   KnowledgeModalType,
   ModalState,
-} from "../types/knowledge.types";
+} from "@/features/knowledge";
 
 interface UseKnowledgeTableProps {
   items: KnowledgeItem[];

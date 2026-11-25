@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Upload, Globe, FileText, X } from "lucide-react";
-import { createWorkspaceKnowledge } from "../../services/knowledge.service";
+import { createWorkspaceKnowledge } from "@/features/knowledge";
 import { KnowledgeStepper } from "./knowledge-stepper";
 import { KnowledgeFormFooter } from "./knowledge-form-footer";
 

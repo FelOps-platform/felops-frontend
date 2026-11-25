@@ -10,13 +10,13 @@ import {
   Trash2,
   Bot,
 } from "lucide-react";
-import type { KnowledgeModalType } from "../types/knowledge.types";
+import type { KnowledgeModalType, AssignedAgent } from "@/features/knowledge";
 
 export interface KnowledgeActionModalProps {
   isOpen: boolean;
   onClose: () => void;
   type: KnowledgeModalType;
-  assignedAgents?: string[];
+  assignedAgents?: Array<string | { id: string; name: string }>;
   onRemoveSource?: () => void;
   onRetryProcessing?: () => void;
   isRemoving?: boolean;
@@ -148,7 +148,9 @@ export function KnowledgeActionModal({
                 </p>
                 <p className="mt-0.5 text-neutral-700">
                   {assignedAgents.length > 0
-                    ? assignedAgents.join(", ")
+                    ? assignedAgents
+                        .map((a) => (typeof a === "string" ? a : a.name))
+                        .join(", ")
                     : "No agents assigned"}
                 </p>
               </div>

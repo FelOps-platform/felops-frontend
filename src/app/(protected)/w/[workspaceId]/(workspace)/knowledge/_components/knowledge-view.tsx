@@ -9,7 +9,7 @@ import {
   deleteWorkspaceKnowledge,
   retryKnowledgeProcessing,
   type KnowledgeItem,
-} from "../services/knowledge.service";
+} from "@/features/knowledge";
 import { KnowledgeTable } from "./knowledge-table";
 
 interface KnowledgeViewProps {
