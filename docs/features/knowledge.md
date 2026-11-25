@@ -265,14 +265,14 @@ export type AddKnowledgeFormData = z.infer<typeof addKnowledgeSchema>;
 - [x] Update `src/app/(protected)/w/[workspaceId]/agents/_components/steps/KnowledgeStep.tsx` to consume `src/features/knowledge`.
 
 ### Phase 2 (PR #3): Table A11y, States & Error Handling
-- [ ] Split `use-knowledge-table.tsx` into `knowledge-ui.tsx`, `use-knowledge-filters.ts`, and `use-knowledge-modal.ts`.
-- [ ] Refactor modal state to a discriminated union `{ status: 'closed' | 'availability' | 'remove'; itemId?: string }`.
-- [ ] Render action dropdown menus via portal/popover, resolving table container `overflow-hidden` clipping.
-- [ ] Implement accessible keyboard navigation for action menu (`Escape` to close, arrow keys, focus return) and ARIA attributes (`role="menu"`, `role="menuitem"`).
-- [ ] Fix row click behavior: prevent opening when clicking inner elements (`e.target === e.currentTarget`), use real `<a>` for title, and disable opening when `openUrl` is missing or status is `Processing`/`Failed`.
-- [ ] Implement all 4 UI states in `knowledge-view.tsx` (Loading skeleton, Empty CTA, Error with retry, Success).
-- [ ] Implement optimistic rollbacks with toast notifications on delete and retry failures.
-- [ ] Update `KnowledgeActionModal` to show affected `assignedAgents` in remove mode and richer error details in availability mode.
+- [x] Split `use-knowledge-table.tsx` into `knowledge-ui.tsx`, `use-knowledge-filters.ts`, and `use-knowledge-modal.ts`.
+- [x] Refactor modal state to a discriminated union `{ status: 'closed' | 'availability' | 'remove'; itemId?: string }`.
+- [x] Render action dropdown menus via portal/popover, resolving table container `overflow-hidden` clipping.
+- [x] Implement accessible keyboard navigation for action menu (`Escape` to close, arrow keys, focus return) and ARIA attributes (`role="menu"`, `role="menuitem"`).
+- [x] Fix row click behavior: prevent opening when clicking inner elements (`e.target === e.currentTarget`), use real `<a>` for title, and disable opening when `openUrl` is missing or status is `Processing`/`Failed`.
+- [x] Implement all 4 UI states in `knowledge-view.tsx` (Loading skeleton, Empty CTA, Error with retry, Success).
+- [x] Implement optimistic rollbacks with toast notifications on delete and retry failures.
+- [x] Update `KnowledgeActionModal` to show affected `assignedAgents` in remove mode and richer error details in availability mode.
 
 ### Phase 3 (PR #4): Wizard RHF/Zod & Polling
 - [ ] Refactor `add-knowledge-form.tsx` to use `react-hook-form` and `@hookform/resolvers/zod` with `addKnowledgeSchema` discriminated union.

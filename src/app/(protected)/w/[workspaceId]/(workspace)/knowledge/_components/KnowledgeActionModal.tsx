@@ -1,24 +1,32 @@
 "use client";
 
-import React, { useEffect, useCallback } from "react";
+import React from "react";
 import {
-  X,
   AlertCircle,
   AlertTriangle,
   Clock,
   RotateCw,
   Trash2,
   Bot,
+  CheckCircle2,
 } from "lucide-react";
-import type { KnowledgeModalType, AssignedAgent } from "@/features/knowledge";
+import type {
+  KnowledgeItem,
+  KnowledgeModalType,
+  AssignedAgent,
+} from "@/features/knowledge";
+import { Modal } from "@/components/ui/modal";
+import { Button } from "@/components/ui/button";
 
 export interface KnowledgeActionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  type: KnowledgeModalType;
-  assignedAgents?: Array<string | { id: string; name: string }>;
-  onRemoveSource?: () => void;
-  onRetryProcessing?: () => void;
+  mode?: "availability" | "remove";
+  type?: KnowledgeModalType;
+  item?: KnowledgeItem | null;
+  assignedAgents?: Array<string | AssignedAgent>;
+  onRemoveSource?: (id?: string) => void | Promise<void>;
+  onRetryProcessing?: (id?: string) => void | Promise<void>;
   isRemoving?: boolean;
   isRetrying?: boolean;
 }
@@ -26,190 +34,221 @@ export interface KnowledgeActionModalProps {
 export function KnowledgeActionModal({
   isOpen,
   onClose,
+  mode,
   type,
-  assignedAgents = [],
+  item,
+  assignedAgents: propAssignedAgents,
   onRemoveSource,
   onRetryProcessing,
   isRemoving = false,
   isRetrying = false,
 }: KnowledgeActionModalProps) {
-  // Handle ESC key press to close modal
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen && !isRemoving && !isRetrying) {
-        onClose();
-      }
-    },
-    [isOpen, isRemoving, isRetrying, onClose],
-  );
-
-  useEffect(() => {
-    if (isOpen) {
-      window.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
-    }
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen, handleKeyDown]);
-
   if (!isOpen) return null;
 
-  const isRemoveConfirm = type === "remove_confirm";
-  const title = isRemoveConfirm
-    ? "Remove knowledge source?"
-    : "Source Availability";
+  const isRemove = mode === "remove" || type === "remove_confirm";
+  const title = isRemove ? "Remove knowledge source?" : "Source Availability";
 
-  // Reusable Remove Button to avoid repeating across states
-  const renderRemoveButton = () => (
-    <button
-      type="button"
-      onClick={onRemoveSource}
-      disabled={isRemoving || isRetrying}
-      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-wrong-600 hover:bg-wrong-700 text-white font-semibold text-xs sm:text-sm transition-all shadow-xs cursor-pointer disabled:opacity-50 active:scale-[0.99]"
-    >
-      <Trash2 className="w-4 h-4" />
-      <span>{isRemoving ? "Removing..." : "Remove source"}</span>
-    </button>
-  );
+  const effectiveAgents: AssignedAgent[] =
+    item?.assignedAgents && item.assignedAgents.length > 0
+      ? item.assignedAgents
+      : (propAssignedAgents || []).map((a, i) =>
+          typeof a === "string" ? { id: `agent_${i}`, name: a } : a,
+        );
+
+  const status = item?.status
+    ? item.status.toLowerCase()
+    : type === "unavailable"
+      ? "failed"
+      : type === "processing"
+        ? "processing"
+        : "ready";
+
+  const handleRemove = () => {
+    onRemoveSource?.(item?.id);
+  };
+
+  const handleRetry = () => {
+    onRetryProcessing?.(item?.id);
+  };
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title"
-      aria-describedby="modal-description"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-secondary-950/70 backdrop-blur-sm p-4 animate-in fade-in duration-200"
-      onClick={(e) => {
-        if (e.target === e.currentTarget && !isRemoving && !isRetrying) {
-          onClose();
-        }
-      }}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      surface="light"
+      title={title}
+      showCloseButton={!isRemoving && !isRetrying}
     >
-      <div className="w-full max-w-lg bg-neutral-50 border border-neutral-300 rounded-3xl p-6 sm:p-7 shadow-2xl relative text-secondary-950 animate-in zoom-in-95 duration-150">
-        {/* Close 'X' Button */}
-        <button
-          type="button"
-          onClick={onClose}
-          disabled={isRemoving || isRetrying}
-          aria-label="Close modal"
-          className="absolute top-5 right-5 text-neutral-400 hover:text-secondary-950 p-1.5 rounded-xl hover:bg-neutral-200/60 transition-colors disabled:opacity-50 cursor-pointer"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        {/* Modal Header */}
-        <div className="mb-5 pr-8">
-          <h2
-            id="modal-title"
-            className="text-lg sm:text-xl font-bold tracking-tight text-secondary-950"
-          >
-            {title}
-          </h2>
-        </div>
-
-        {/* Modal Body: 4 Distinct States */}
-        <div id="modal-description" className="mb-6">
-          {type === "unavailable" && (
-            <div className="flex items-start gap-3 p-4 rounded-2xl bg-wrong-50 border border-wrong-200 text-wrong-950">
-              <AlertCircle className="w-5 h-5 text-wrong-600 shrink-0 mt-0.5" />
-              <div className="text-xs sm:text-sm leading-relaxed">
-                <p className="font-semibold text-wrong-900">Unavailable</p>
-                <p className="mt-0.5 text-wrong-800">
-                  This source is unavailable. Retry processing before assigning
-                  this source to Agents.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {type === "processing" && (
-            <div className="flex items-start gap-3 p-4 rounded-2xl bg-secondary2-50 border border-secondary2-200 text-secondary2-950">
-              <Clock className="w-5 h-5 text-secondary2-600 shrink-0 mt-0.5 animate-pulse" />
-              <div className="text-xs sm:text-sm leading-relaxed">
-                <p className="font-semibold text-secondary2-900">
-                  Processing in progress
-                </p>
-                <p className="mt-0.5 text-secondary2-800">
-                  This source is still processing. It cannot be used by Agents
-                  until processing is complete.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {type === "available" && (
-            <div className="flex items-start gap-3 p-4 rounded-2xl bg-secondary-50/70 border border-secondary-200 text-secondary-950">
-              <Bot className="w-5 h-5 text-secondary-700 shrink-0 mt-0.5" />
-              <div className="text-xs sm:text-sm leading-relaxed">
-                <p className="font-semibold text-secondary-950">
-                  {assignedAgents.length} Assigned Agents
-                </p>
-                <p className="mt-0.5 text-neutral-700">
-                  {assignedAgents.length > 0
-                    ? assignedAgents
-                        .map((a) => (typeof a === "string" ? a : a.name))
-                        .join(", ")
-                    : "No agents assigned"}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {type === "remove_confirm" && (
+      <div className="space-y-6">
+        {/* Modal Body: Remove mode */}
+        {isRemove && (
+          <div className="space-y-4">
             <div className="flex items-start gap-3 p-4 rounded-2xl bg-wrong-50 border border-wrong-200 text-wrong-950">
               <AlertTriangle className="w-5 h-5 text-wrong-600 shrink-0 mt-0.5" />
               <div className="text-xs sm:text-sm leading-relaxed">
                 <p className="font-semibold text-wrong-900">Are you sure?</p>
                 <p className="mt-0.5 text-wrong-800">
-                  This action cannot be undone. Removing this source deletes it
-                  from Workspace Shared Knowledge.
+                  Removing{" "}
+                  <span className="font-semibold">
+                    {item?.name || "this source"}
+                  </span>{" "}
+                  will delete it permanently from Workspace Shared Knowledge.
+                  This action cannot be undone.
                 </p>
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Modal Action Buttons Footer */}
-        <div className="pt-2">
-          {type === "unavailable" && (
-            <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3">
-              <button
-                type="button"
-                onClick={onRetryProcessing}
-                disabled={isRetrying || isRemoving}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-300 bg-white hover:bg-neutral-100 text-secondary-950 font-semibold text-xs sm:text-sm transition-all shadow-xs cursor-pointer disabled:opacity-50 active:scale-[0.99]"
-              >
-                <RotateCw
-                  className={`w-4 h-4 text-secondary-700 ${isRetrying ? "animate-spin" : ""}`}
-                />
-                <span>{isRetrying ? "Retrying..." : "Retry processing"}</span>
-              </button>
-              {renderRemoveButton()}
-            </div>
-          )}
+            {effectiveAgents.length > 0 && (
+              <div className="p-3.5 rounded-2xl bg-neutral-100 border border-neutral-300">
+                <p className="text-xs font-semibold text-neutral-900 mb-2 flex items-center gap-1.5">
+                  <Bot className="w-4 h-4 text-secondary-600" />
+                  <span>
+                    {effectiveAgents.length} assigned Agent(s) will lose access:
+                  </span>
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {effectiveAgents.map((agent) => (
+                    <span
+                      key={agent.id}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs bg-neutral-200 text-neutral-900 border border-neutral-300"
+                    >
+                      {agent.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
-          {type === "remove_confirm" && (
-            <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
-              <button
-                type="button"
+        {/* Modal Body: Availability mode */}
+        {!isRemove && (
+          <div className="space-y-4">
+            {status === "failed" && (
+              <div className="flex items-start gap-3 p-4 rounded-2xl bg-wrong-50 border border-wrong-200 text-wrong-950">
+                <AlertCircle className="w-5 h-5 text-wrong-600 shrink-0 mt-0.5" />
+                <div className="text-xs sm:text-sm leading-relaxed">
+                  <p className="font-semibold text-wrong-900">
+                    Source Unavailable
+                  </p>
+                  <p className="mt-0.5 text-wrong-800">
+                    {item?.errorMessage ||
+                      "This source failed during ingestion or OCR vectorization. Retry processing before assigning this source to Agents."}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {status === "processing" && (
+              <div className="flex items-start gap-3 p-4 rounded-2xl bg-secondary2-50 border border-secondary2-200 text-secondary2-950">
+                <Clock className="w-5 h-5 text-secondary2-600 shrink-0 mt-0.5 animate-pulse" />
+                <div className="text-xs sm:text-sm leading-relaxed">
+                  <p className="font-semibold text-secondary2-900">
+                    Processing in progress
+                  </p>
+                  <p className="mt-0.5 text-secondary2-800">
+                    This source is currently being vectorized and indexed. It
+                    cannot be assigned to Agents until processing completes.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {status === "ready" && (
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-4 rounded-2xl bg-right-50 border border-right-200 text-right-950">
+                  <CheckCircle2 className="w-5 h-5 text-right-600 shrink-0 mt-0.5" />
+                  <div className="text-xs sm:text-sm leading-relaxed">
+                    <p className="font-semibold text-right-900">
+                      Ready for Use
+                    </p>
+                    <p className="mt-0.5 text-right-800">
+                      This source is fully vectorized and available to Workspace
+                      Agents.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-neutral-100 border border-neutral-300">
+                  <p className="text-xs font-semibold text-neutral-900 mb-1.5 flex items-center gap-1.5">
+                    <Bot className="w-4 h-4 text-secondary-600" />
+                    <span>{effectiveAgents.length} Assigned Agents:</span>
+                  </p>
+                  {effectiveAgents.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {effectiveAgents.map((agent) => (
+                        <span
+                          key={agent.id}
+                          className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs bg-neutral-200 text-neutral-900 border border-neutral-300"
+                        >
+                          {agent.name}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-neutral-500">
+                      No agents currently assigned to this knowledge source.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Footer actions */}
+        <div className="pt-2 flex flex-col-reverse sm:flex-row items-center justify-between gap-3">
+          {isRemove ? (
+            <div className="flex items-center justify-end gap-3 w-full">
+              <Button
+                variant="outline"
+                surface="light"
                 onClick={onClose}
                 disabled={isRemoving || isRetrying}
-                className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2.5 rounded-xl border border-neutral-300 bg-white hover:bg-neutral-100 text-secondary-950 font-semibold text-xs sm:text-sm transition-all shadow-xs cursor-pointer disabled:opacity-50 active:scale-[0.99]"
               >
                 Cancel
-              </button>
-              {renderRemoveButton()}
+              </Button>
+              <Button
+                variant="danger"
+                surface="light"
+                onClick={handleRemove}
+                isLoading={isRemoving}
+                disabled={isRemoving || isRetrying}
+              >
+                <Trash2 className="w-4 h-4 mr-1.5" />
+                <span>Remove source</span>
+              </Button>
             </div>
-          )}
-
-          {(type === "processing" || type === "available") && (
-            <div className="flex justify-end">{renderRemoveButton()}</div>
+          ) : (
+            <div className="flex items-center justify-between gap-3 w-full">
+              {status === "failed" ? (
+                <Button
+                  variant="outline"
+                  surface="light"
+                  onClick={handleRetry}
+                  isLoading={isRetrying}
+                  disabled={isRetrying || isRemoving}
+                >
+                  <RotateCw className="w-4 h-4 mr-1.5" />
+                  <span>Retry processing</span>
+                </Button>
+              ) : (
+                <div />
+              )}
+              <Button
+                variant="danger"
+                surface="light"
+                onClick={handleRemove}
+                disabled={isRemoving || isRetrying}
+              >
+                <Trash2 className="w-4 h-4 mr-1.5" />
+                <span>Remove source</span>
+              </Button>
+            </div>
           )}
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }
 
