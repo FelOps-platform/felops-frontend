@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useTransition } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -96,8 +96,30 @@ export function KnowledgeView({ workspaceId }: KnowledgeViewProps) {
   );
 
   useEffect(() => {
-    loadData(true);
-  }, [loadData]);
+    let ignore = false;
+    getWorkspaceKnowledge(workspaceId)
+      .then((data) => {
+        if (!ignore) {
+          setItems(data);
+          setIsError(false);
+          setIsLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (!ignore) {
+          setIsError(true);
+          setErrorMessage(
+            err instanceof Error
+              ? err.message
+              : "Failed to load knowledge sources. Please try again.",
+          );
+          setIsLoading(false);
+        }
+      });
+    return () => {
+      ignore = true;
+    };
+  }, [workspaceId]);
 
   // Background polling for items in "Processing" state (pauses when document is hidden)
   useKnowledgePolling({

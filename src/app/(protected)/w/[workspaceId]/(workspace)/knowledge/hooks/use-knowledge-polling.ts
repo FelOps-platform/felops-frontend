@@ -15,7 +15,10 @@ export function useKnowledgePolling({
   intervalMs = 4000,
 }: UseKnowledgePollingOptions) {
   const onPollRef = useRef(onPoll);
-  onPollRef.current = onPoll;
+
+  useEffect(() => {
+    onPollRef.current = onPoll;
+  }, [onPoll]);
 
   const hasProcessing = items.some((item) => item.status === "Processing");
 
