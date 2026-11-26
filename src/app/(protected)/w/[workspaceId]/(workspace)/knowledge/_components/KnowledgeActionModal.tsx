@@ -10,10 +10,11 @@ import {
   Bot,
   CheckCircle2,
 } from "lucide-react";
-import type {
-  KnowledgeItem,
-  KnowledgeModalType,
-  AssignedAgent,
+import {
+  type KnowledgeItem,
+  type KnowledgeModalType,
+  type AssignedAgent,
+  formatKnowledgeErrorMessage,
 } from "@/features/knowledge";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
@@ -52,8 +53,8 @@ export function KnowledgeActionModal({
     item?.assignedAgents && item.assignedAgents.length > 0
       ? item.assignedAgents
       : (propAssignedAgents || []).map((a, i) =>
-          typeof a === "string" ? { id: `agent_${i}`, name: a } : a,
-        );
+        typeof a === "string" ? { id: `agent_${i}`, name: a } : a,
+      );
 
   const status = item?.status
     ? item.status.toLowerCase()
@@ -132,8 +133,7 @@ export function KnowledgeActionModal({
                     Source Unavailable
                   </p>
                   <p className="mt-0.5 text-wrong-800">
-                    {item?.errorMessage ||
-                      "This source failed during ingestion or OCR vectorization. Retry processing before assigning this source to Agents."}
+                    {formatKnowledgeErrorMessage(item?.errorMessage)}
                   </p>
                 </div>
               </div>
@@ -156,19 +156,6 @@ export function KnowledgeActionModal({
 
             {status === "ready" && (
               <div className="space-y-3">
-                <div className="flex items-start gap-3 p-4 rounded-2xl bg-right-50 border border-right-200 text-right-950">
-                  <CheckCircle2 className="w-5 h-5 text-right-600 shrink-0 mt-0.5" />
-                  <div className="text-xs sm:text-sm leading-relaxed">
-                    <p className="font-semibold text-right-900">
-                      Ready for Use
-                    </p>
-                    <p className="mt-0.5 text-right-800">
-                      This source is fully vectorized and available to Workspace
-                      Agents.
-                    </p>
-                  </div>
-                </div>
-
                 <div className="p-3.5 rounded-2xl bg-neutral-100 border border-neutral-300">
                   <p className="text-xs font-semibold text-neutral-900 mb-1.5 flex items-center gap-1.5">
                     <Bot className="w-4 h-4 text-secondary-600" />

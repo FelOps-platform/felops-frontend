@@ -43,6 +43,80 @@ export function formatKnowledgeDate(dateStr?: string | null): string {
   });
 }
 
+/**
+ * Sanitizes raw backend or technical errors into user-friendly, actionable UI messages.
+ * Prevents internal pipeline jargon (e.g. OCR, vectorization, stack traces) from leaking to end users.
+ */
+export function formatKnowledgeErrorMessage(rawError?: string | null): string {
+  const fallback = 'Processing failed. Please retry or check your source.';
+  if (!rawError) return fallback;
+
+  const lower = rawError.toLowerCase().trim();
+
+  // Ingestion / Vectorization / Pipeline internals
+  if (
+    lower.includes('ocr') ||
+    lower.includes('vector') ||
+    lower.includes('ingestion') ||
+    lower.includes('pipeline')
+  ) {
+    return "We couldn't process this source. Please try again or upload a different file.";
+  }
+
+  // Timeouts
+  if (lower.includes('timeout') || lower.includes('timed out')) {
+    return 'Processing took longer than expected. Please try again in a few moments.';
+  }
+
+  // Connectivity / Upstream issues
+  if (
+    lower.includes('network') ||
+    lower.includes('connection') ||
+    lower.includes('upstream') ||
+    lower.includes('503')
+  ) {
+    return 'Unable to connect to the processing service. Please try again shortly.';
+  }
+
+  // File parsing / corruption
+  if (
+    lower.includes('corrupt') ||
+    lower.includes('unreadable') ||
+    lower.includes('parse') ||
+    lower.includes('invalid format')
+  ) {
+    return 'The document could not be read. Please check the file format and try uploading again.';
+  }
+
+  // Payload size
+  if (
+    lower.includes('size') ||
+    lower.includes('10mb') ||
+    lower.includes('413') ||
+    lower.includes('payload too large')
+  ) {
+    return 'This document exceeds the 10MB limit. Please upload a smaller file.';
+  }
+
+  // Duplicate conflicts
+  if (
+    lower.includes('duplicate') ||
+    lower.includes('409') ||
+    lower.includes('already exists')
+  ) {
+    return 'A knowledge source with this name or URL already exists in this workspace.';
+  }
+
+  // Code or stack trace heuristics
+  if (
+    /[{}<>\\]|stack\s*trace|exception|error:|internal\s*server/i.test(rawError)
+  ) {
+    return fallback;
+  }
+
+  return rawError.trim();
+}
+
 export function normalizeAssignedAgents(
   agents?: Array<string | AssignedAgent> | null
 ): AssignedAgent[] {

@@ -233,11 +233,10 @@ export function KnowledgeTable({
                       aria-label={
                         hasValidLink ? `Open source: ${item.name}` : undefined
                       }
-                      className={`text-secondary-950 transition-colors ${
-                        hasValidLink
+                      className={`text-secondary-950 transition-colors ${hasValidLink
                           ? "hover:bg-neutral-200/50 cursor-pointer focus:outline-none focus:bg-neutral-200/60"
                           : "hover:bg-neutral-100/60"
-                      }`}
+                        }`}
                     >
                       {/* Name with icon & source label / semantic link */}
                       <td className="px-5 py-4">
@@ -257,7 +256,6 @@ export function KnowledgeTable({
                                   title={`Open source: ${item.source}`}
                                 >
                                   <span>{item.name}</span>
-                                  <ExternalLink className="w-3 h-3 text-secondary-400 shrink-0" />
                                 </a>
                               ) : (
                                 <span
@@ -319,11 +317,10 @@ export function KnowledgeTable({
                             e.stopPropagation();
                             toggleMenu(item.id);
                           }}
-                          className={`p-1.5 rounded-lg text-secondary-950 transition-colors cursor-pointer inline-flex items-center justify-center ${
-                            activeMenuId === item.id
+                          className={`p-1.5 rounded-lg text-secondary-950 transition-colors cursor-pointer inline-flex items-center justify-center ${activeMenuId === item.id
                               ? "bg-neutral-300"
                               : "hover:bg-neutral-300/70"
-                          }`}
+                            }`}
                         >
                           <MoreHorizontal className="w-5 h-5" />
                         </button>
