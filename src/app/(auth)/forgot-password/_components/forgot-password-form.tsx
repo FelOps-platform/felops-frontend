@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, Button } from "@/components/ui";
 import {
+  AuthApiError,
   forgotPassword,
   forgotPasswordSchema,
   mapAuthError,
@@ -14,8 +15,7 @@ import {
   verifyResetCode,
   type ForgotPasswordInput,
 } from "@/features/auth";
-import { AuthField } from "@/features/auth/components";
-import VerifyOtpModal from "../../_components/VerifyOtpModal";
+import { AuthField, VerifyOtpModal } from "@/features/auth/components";
 
 export function ForgotPasswordForm() {
   const router = useRouter();
@@ -24,11 +24,15 @@ export function ForgotPasswordForm() {
     null,
   );
 
-  // OTP Modal State (refactored in Phase 4)
+  // OTP Modal State
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [otpError, setOtpError] = useState<string | undefined>(undefined);
   const [submittedEmail, setSubmittedEmail] = useState("");
+  const [otpExpiresAt, setOtpExpiresAt] = useState<string | undefined>(undefined);
+  const [resendAvailableAt, setResendAvailableAt] = useState<string | undefined>(
+    undefined,
+  );
 
   const {
     register,
@@ -47,9 +51,11 @@ export function ForgotPasswordForm() {
     setGeneralError(null);
     setConfirmationMessage(null);
     try {
-      await forgotPassword({ email: data.email });
+      const response = await forgotPassword({ email: data.email });
 
       setSubmittedEmail(data.email);
+      setOtpExpiresAt(response.expiresAt);
+      setResendAvailableAt(response.resendAvailableAt);
       setConfirmationMessage(
         "If an account exists for that email, we've sent a verification code.",
       );
@@ -60,20 +66,24 @@ export function ForgotPasswordForm() {
     }
   };
 
-  const handleVerifyOtp = async (otpCode: string) => {
+  const handleVerifyOtp = async (otpCode: string): Promise<boolean> => {
     setIsVerifyingOtp(true);
     setOtpError(undefined);
 
     try {
-      const { resetToken } = await verifyResetCode({
+      await verifyResetCode({
         email: submittedEmail,
         code: otpCode,
       });
 
       setIsOtpModalOpen(false);
-      router.push(`/reset-password?token=${encodeURIComponent(resetToken)}`);
+      // Reset token is persisted in an httpOnly cookie; keep email and token out of the URL
+      router.push("/reset-password");
+      router.refresh();
+      return true;
     } catch (err: unknown) {
       setOtpError(mapAuthError(err));
+      return false;
     } finally {
       setIsVerifyingOtp(false);
     }
@@ -83,8 +93,19 @@ export function ForgotPasswordForm() {
     setOtpError(undefined);
 
     try {
-      await resendCode({ email: submittedEmail, purpose: "reset_password" });
+      const response = await resendCode({
+        email: submittedEmail,
+        purpose: "reset_password",
+      });
+      setOtpExpiresAt(response.expiresAt);
+      setResendAvailableAt(response.resendAvailableAt);
     } catch (err: unknown) {
+      if (err instanceof AuthApiError && err.meta) {
+        if (err.meta.expiresAt) setOtpExpiresAt(err.meta.expiresAt);
+        if (err.meta.resendAvailableAt) {
+          setResendAvailableAt(err.meta.resendAvailableAt);
+        }
+      }
       setOtpError(mapAuthError(err));
     }
   };
@@ -153,6 +174,8 @@ export function ForgotPasswordForm() {
         description="Enter the 6-digit code sent to"
         isVerifying={isVerifyingOtp}
         error={otpError}
+        expiresAt={otpExpiresAt}
+        resendAvailableAt={resendAvailableAt}
         onClearError={() => setOtpError(undefined)}
         onVerify={handleVerifyOtp}
         onResend={handleResendOtp}

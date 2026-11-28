@@ -4,7 +4,11 @@ import { AuthApiError } from './types';
 export function jsonErrorResponse(error: unknown): NextResponse {
   if (error instanceof AuthApiError) {
     return NextResponse.json(
-      { code: error.code, message: error.message },
+      {
+        code: error.code,
+        message: error.message,
+        ...(error.meta ?? {}),
+      },
       { status: error.status || 400 }
     );
   }

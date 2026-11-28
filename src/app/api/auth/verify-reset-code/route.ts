@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifyResetCode } from '@/features/auth/service';
+import { createResetTokenCookie } from '@/features/auth/session.server';
 import {
   jsonErrorResponse,
   parseJsonBody,
@@ -17,6 +18,7 @@ export async function POST(request: Request) {
 
   try {
     const result = await verifyResetCode(body);
+    await createResetTokenCookie(result.resetToken, result.expiresAt);
     return NextResponse.json(result);
   } catch (error: unknown) {
     return jsonErrorResponse(error);

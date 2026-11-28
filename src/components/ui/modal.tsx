@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useId, useRef } from "react";
 import { X } from "lucide-react";
 
 export interface ModalProps {
@@ -12,7 +12,18 @@ export interface ModalProps {
   className?: string;
   showCloseButton?: boolean;
   surface?: "dark" | "light";
+  closeDisabled?: boolean;
+  initialFocusRef?: React.RefObject<HTMLElement | null>;
 }
+
+const FOCUSABLE_SELECTOR = [
+  "a[href]",
+  "button:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+].join(", ");
 
 export function Modal({
   isOpen,
@@ -23,26 +34,85 @@ export function Modal({
   className = "",
   showCloseButton = true,
   surface = "dark",
+  closeDisabled = false,
+  initialFocusRef,
 }: ModalProps) {
+  const titleId = useId();
+  const descriptionId = useId();
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
+      if (!isOpen) return;
+
+      if (e.key === "Escape") {
+        if (!closeDisabled) {
+          e.preventDefault();
+          onClose();
+        }
+        return;
+      }
+
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = Array.from(
+          panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+        ).filter((el) => el.offsetParent !== null);
+
+        if (focusable.length === 0) {
+          e.preventDefault();
+          panelRef.current.focus();
+          return;
+        }
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement as HTMLElement | null;
+
+        if (e.shiftKey) {
+          if (!active || active === first || !panelRef.current.contains(active)) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else if (active === last || !panelRef.current.contains(active)) {
+          e.preventDefault();
+          first.focus();
+        }
       }
     },
-    [isOpen, onClose],
+    [isOpen, closeDisabled, onClose],
   );
 
   useEffect(() => {
-    if (isOpen) {
-      window.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
-    }
+    if (!isOpen) return;
+
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    window.addEventListener("keydown", handleKeyDown);
+    document.body.style.overflow = "hidden";
+
+    const focusTimer = window.requestAnimationFrame(() => {
+      if (initialFocusRef?.current) {
+        initialFocusRef.current.focus();
+        return;
+      }
+      const firstFocusable = panelRef.current?.querySelector<HTMLElement>(
+        FOCUSABLE_SELECTOR,
+      );
+      if (firstFocusable) {
+        firstFocusable.focus();
+      } else {
+        panelRef.current?.focus();
+      }
+    });
+
     return () => {
+      window.cancelAnimationFrame(focusTimer);
       window.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "unset";
+      previousFocusRef.current?.focus();
+      previousFocusRef.current = null;
     };
-  }, [isOpen, handleKeyDown]);
+  }, [isOpen, handleKeyDown, initialFocusRef]);
 
   if (!isOpen) return null;
 
@@ -62,22 +132,27 @@ export function Modal({
     <div
       role="dialog"
       aria-modal="true"
+      aria-labelledby={title ? titleId : undefined}
+      aria-describedby={description ? descriptionId : undefined}
       className="fixed inset-0 z-50 flex items-center justify-center bg-secondary-950/70 backdrop-blur-sm p-4 animate-in fade-in duration-200"
       onClick={(e) => {
-        if (e.target === e.currentTarget) {
+        if (e.target === e.currentTarget && !closeDisabled) {
           onClose();
         }
       }}
     >
       <div
-        className={`w-full max-w-lg rounded-3xl p-6 sm:p-7 shadow-2xl relative animate-in zoom-in-95 duration-150 ${containerStyles} ${className}`}
+        ref={panelRef}
+        tabIndex={-1}
+        className={`w-full max-w-lg rounded-3xl p-6 sm:p-7 shadow-2xl relative animate-in zoom-in-95 duration-150 focus:outline-none ${containerStyles} ${className}`}
       >
         {showCloseButton && (
           <button
             type="button"
+            disabled={closeDisabled}
             onClick={onClose}
             aria-label="Close dialog"
-            className={`absolute top-5 right-5 p-1.5 rounded-xl transition-colors cursor-pointer ${closeButtonStyles}`}
+            className={`absolute top-5 right-5 p-1.5 rounded-xl transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${closeButtonStyles}`}
           >
             <X className="w-5 h-5" />
           </button>
@@ -87,6 +162,7 @@ export function Modal({
           <div className="mb-5 pr-8 space-y-1">
             {title && (
               <h2
+                id={titleId}
                 className={`text-lg sm:text-xl font-bold tracking-tight ${titleStyles}`}
               >
                 {title}
@@ -94,6 +170,7 @@ export function Modal({
             )}
             {description && (
               <p
+                id={descriptionId}
                 className={`text-xs sm:text-sm leading-relaxed ${descriptionStyles}`}
               >
                 {description}

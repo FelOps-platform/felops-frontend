@@ -1,13 +1,16 @@
 import {
   AuthApiError,
+  type AuthApiErrorMeta,
   type AuthErrorCode,
   type ForgotPasswordRequest,
   type ForgotPasswordResponse,
+  type InviteDetails,
   type OtpPurpose,
   type ResendCodeRequest,
   type ResendCodeResponse,
   type ResetPasswordRequest,
   type ResetPasswordResponse,
+  type ResetTokenValidation,
   type Session,
   type SignInRequest,
   type SignUpRequest,
@@ -34,6 +37,17 @@ interface StoredOtp {
 interface StoredResetToken {
   email: string;
   expiresAt: number;
+  used: boolean;
+}
+
+interface StoredInvite {
+  token: string;
+  workspaceId: string;
+  workspaceName: string;
+  inviterName: string;
+  role: 'Owner' | 'Admin' | 'Member';
+  expiresAt: number;
+  used: boolean;
 }
 
 interface MockAuthStores {
@@ -41,6 +55,7 @@ interface MockAuthStores {
   accountStore: Map<string, StoredAccount>;
   otpStore: Map<string, StoredOtp>;
   resetTokenStore: Map<string, StoredResetToken>;
+  inviteStore: Map<string, StoredInvite>;
   sessionStore: Map<string, Session>;
   activeSessionToken: string | null;
 }
@@ -78,6 +93,63 @@ const INITIAL_ACCOUNTS: Array<{
   },
 ];
 
+const INITIAL_RESET_TOKENS: Array<{ token: string; record: StoredResetToken }> = [
+  {
+    token: 'rst_demo_valid',
+    record: {
+      email: 'demo@felops.com',
+      expiresAt: Date.now() + 60 * 60 * 1000,
+      used: false,
+    },
+  },
+  {
+    token: 'rst_demo_expired',
+    record: {
+      email: 'demo@felops.com',
+      expiresAt: Date.now() - 60 * 1000,
+      used: false,
+    },
+  },
+  {
+    token: 'rst_demo_used',
+    record: {
+      email: 'demo@felops.com',
+      expiresAt: Date.now() + 60 * 60 * 1000,
+      used: true,
+    },
+  },
+];
+
+const INITIAL_INVITES: StoredInvite[] = [
+  {
+    token: 'inv_demo_valid',
+    workspaceId: 'ws-ai-production',
+    workspaceName: 'AI Production Hub',
+    inviterName: 'Workspace Owner',
+    role: 'Member',
+    expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    used: false,
+  },
+  {
+    token: 'inv_demo_expired',
+    workspaceId: 'ws-enterprise-ops',
+    workspaceName: 'Enterprise Operations',
+    inviterName: 'Workspace Admin',
+    role: 'Admin',
+    expiresAt: Date.now() - 60 * 1000,
+    used: false,
+  },
+  {
+    token: 'inv_demo_used',
+    workspaceId: 'ws-customer-fleet',
+    workspaceName: 'Customer Support Fleet',
+    inviterName: 'Workspace Owner',
+    role: 'Member',
+    expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    used: true,
+  },
+];
+
 const globalForAuth = globalThis as typeof globalThis & {
   __felopsAuthStores?: MockAuthStores;
 };
@@ -89,6 +161,7 @@ function getStores(): MockAuthStores {
       accountStore: new Map<string, StoredAccount>(),
       otpStore: new Map<string, StoredOtp>(),
       resetTokenStore: new Map<string, StoredResetToken>(),
+      inviteStore: new Map<string, StoredInvite>(),
       sessionStore: new Map<string, Session>(),
       activeSessionToken: null,
     };
@@ -109,6 +182,15 @@ function getStores(): MockAuthStores {
         });
       }
     }
+
+    for (const item of INITIAL_RESET_TOKENS) {
+      stores.resetTokenStore.set(item.token, item.record);
+    }
+
+    for (const invite of INITIAL_INVITES) {
+      stores.inviteStore.set(invite.token, invite);
+    }
+
     stores.initialized = true;
   }
 
@@ -141,17 +223,27 @@ function createRandomToken(prefix: string): string {
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 12)}`;
 }
 
-function issueOtp(email: string, purpose: OtpPurpose): string {
+function issueOtp(
+  email: string,
+  purpose: OtpPurpose
+): { expiresAt: string; resendAvailableAt: string } {
   const { otpStore } = getStores();
   const key = otpKey(email, purpose);
   const now = Date.now();
+  const expiresAtMs = now + OTP_TTL_MS;
+  const resendAvailableAtMs = now + RESEND_COOLDOWN_MS;
+
   otpStore.set(key, {
     code: MOCK_DEFAULT_OTP,
     purpose,
-    expiresAt: now + OTP_TTL_MS,
+    expiresAt: expiresAtMs,
     lastSentAt: now,
   });
-  return MOCK_DEFAULT_OTP;
+
+  return {
+    expiresAt: new Date(expiresAtMs).toISOString(),
+    resendAvailableAt: new Date(resendAvailableAtMs).toISOString(),
+  };
 }
 
 function createSessionRecord(user: User): {
@@ -176,6 +268,8 @@ function isBrowser(): boolean {
 interface ApiErrorPayload {
   code?: AuthErrorCode;
   message?: string;
+  expiresAt?: string;
+  resendAvailableAt?: string;
 }
 
 async function requestAuthApi<TResponse>(
@@ -209,10 +303,20 @@ async function requestAuthApi<TResponse>(
   }
 
   if (!response.ok) {
+    const meta: AuthApiErrorMeta | undefined =
+      payload?.expiresAt || payload?.resendAvailableAt
+        ? {
+            expiresAt: payload.expiresAt,
+            resendAvailableAt: payload.resendAvailableAt,
+          }
+        : undefined;
+
     throw new AuthApiError(
       payload?.message || 'Authentication request failed.',
       payload?.code ?? 'UNKNOWN',
-      response.status
+      response.status,
+      undefined,
+      meta
     );
   }
 
@@ -225,7 +329,7 @@ async function requestAuthApi<TResponse>(
 export async function signInWithToken(
   input: SignInRequest
 ): Promise<{ session: Session; sessionToken: string }> {
-  const { accountStore } = getStores();
+  const { accountStore, otpStore } = getStores();
   await delay();
 
   const email = normalizeEmail(input.email);
@@ -240,10 +344,27 @@ export async function signInWithToken(
   }
 
   if (!account.user.emailVerified) {
+    const key = otpKey(email, 'verify_email');
+    const existingOtp = otpStore.get(key);
+    const now = Date.now();
+    const canReissue =
+      !existingOtp || now - existingOtp.lastSentAt >= RESEND_COOLDOWN_MS;
+
+    const meta = canReissue
+      ? issueOtp(email, 'verify_email')
+      : {
+          expiresAt: new Date(existingOtp.expiresAt).toISOString(),
+          resendAvailableAt: new Date(
+            existingOtp.lastSentAt + RESEND_COOLDOWN_MS
+          ).toISOString(),
+        };
+
     throw new AuthApiError(
       'Email address is not verified.',
       'EMAIL_NOT_VERIFIED',
-      403
+      403,
+      undefined,
+      meta
     );
   }
 
@@ -301,6 +422,97 @@ export async function getSessionByToken(
   }
 
   return clone(session);
+}
+
+/**
+ * Validate whether a short-lived resetToken is active, expired, used, or invalid.
+ */
+export async function validateResetTokenStatus(
+  resetToken: string | null | undefined
+): Promise<ResetTokenValidation> {
+  if (!resetToken) {
+    return { status: 'invalid' };
+  }
+
+  const { resetTokenStore } = getStores();
+  const record = resetTokenStore.get(resetToken);
+  if (!record) {
+    return { status: 'invalid' };
+  }
+
+  if (record.used) {
+    return { status: 'used' };
+  }
+
+  if (Date.now() > record.expiresAt) {
+    return { status: 'expired' };
+  }
+
+  return {
+    status: 'valid',
+    expiresAt: new Date(record.expiresAt).toISOString(),
+  };
+}
+
+/**
+ * Validate a workspace invitation token on the server.
+ */
+export async function validateInviteToken(token: string): Promise<InviteDetails> {
+  const { inviteStore } = getStores();
+  const invite = inviteStore.get(token);
+
+  if (!invite) {
+    return {
+      token,
+      status: 'invalid',
+      workspaceId: '',
+      workspaceName: 'Unknown Workspace',
+      inviterName: 'Workspace Team',
+      role: 'Member',
+      expiresAt: new Date(0).toISOString(),
+    };
+  }
+
+  let status: InviteDetails['status'] = 'valid';
+  if (invite.used) {
+    status = 'used';
+  } else if (Date.now() > invite.expiresAt) {
+    status = 'expired';
+  }
+
+  return {
+    token: invite.token,
+    status,
+    workspaceId: invite.workspaceId,
+    workspaceName: invite.workspaceName,
+    inviterName: invite.inviterName,
+    role: invite.role,
+    expiresAt: new Date(invite.expiresAt).toISOString(),
+  };
+}
+
+/**
+ * Mark an invitation token as accepted/used on the server.
+ */
+export async function acceptInviteToken(token: string): Promise<InviteDetails> {
+  const details = await validateInviteToken(token);
+  if (details.status !== 'valid') {
+    throw new AuthApiError(
+      details.status === 'expired'
+        ? 'Invitation link expired.'
+        : 'Invitation link is invalid or already used.',
+      details.status === 'expired' ? 'OTP_EXPIRED' : 'OTP_INVALID',
+      400
+    );
+  }
+
+  const { inviteStore } = getStores();
+  const stored = inviteStore.get(token);
+  if (stored) {
+    stored.used = true;
+  }
+
+  return { ...details, status: 'used' };
 }
 
 /**
@@ -380,12 +592,14 @@ export async function signUp(input: SignUpRequest): Promise<SignUpResponse> {
   });
 
   accountStore.set(email, { user, password: input.password });
-  issueOtp(email, 'verify_email');
+  const { expiresAt, resendAvailableAt } = issueOtp(email, 'verify_email');
 
   return {
     message: 'Verification code sent to your email address.',
     email,
     requiresVerification: true,
+    expiresAt,
+    resendAvailableAt,
   };
 }
 
@@ -436,17 +650,29 @@ export async function resendCode(
     throw new AuthApiError(
       'Too many verification code requests.',
       'RATE_LIMITED',
-      429
+      429,
+      undefined,
+      {
+        expiresAt: new Date(existingOtp.expiresAt).toISOString(),
+        resendAvailableAt: new Date(
+          existingOtp.lastSentAt + RESEND_COOLDOWN_MS
+        ).toISOString(),
+      }
     );
   }
 
-  if (accountStore.has(email)) {
-    issueOtp(email, purpose);
-  }
+  const timings = accountStore.has(email)
+    ? issueOtp(email, purpose)
+    : {
+        expiresAt: new Date(Date.now() + OTP_TTL_MS).toISOString(),
+        resendAvailableAt: new Date(Date.now() + RESEND_COOLDOWN_MS).toISOString(),
+      };
 
   return {
     message: 'A new verification code has been sent.',
     cooldownSeconds: Math.round(RESEND_COOLDOWN_MS / 1000),
+    expiresAt: timings.expiresAt,
+    resendAvailableAt: timings.resendAvailableAt,
   };
 }
 
@@ -469,13 +695,18 @@ export async function forgotPassword(
   await delay();
 
   const email = normalizeEmail(input.email);
-  if (accountStore.has(email)) {
-    issueOtp(email, 'reset_password');
-  }
+  const timings = accountStore.has(email)
+    ? issueOtp(email, 'reset_password')
+    : {
+        expiresAt: new Date(Date.now() + OTP_TTL_MS).toISOString(),
+        resendAvailableAt: new Date(Date.now() + RESEND_COOLDOWN_MS).toISOString(),
+      };
 
   return {
     message:
-      'If an account exists for this email address, a verification code has been sent.',
+      "If an account exists for that email, we've sent a verification code.",
+    expiresAt: timings.expiresAt,
+    resendAvailableAt: timings.resendAvailableAt,
   };
 }
 
@@ -520,7 +751,7 @@ export async function verifyResetCode(
 
   const resetToken = createRandomToken('rst');
   const expiresAtMs = Date.now() + RESET_TOKEN_TTL_MS;
-  resetTokenStore.set(resetToken, { email, expiresAt: expiresAtMs });
+  resetTokenStore.set(resetToken, { email, expiresAt: expiresAtMs, used: false });
 
   return {
     resetToken,
@@ -529,7 +760,7 @@ export async function verifyResetCode(
 }
 
 /**
- * Complete password reset using a valid, non-expired resetToken.
+ * Complete password reset using a valid, non-expired single-use resetToken.
  * TODO: Replace mock store with backend POST /auth/reset-password integration.
  */
 export async function resetPassword(
@@ -546,23 +777,22 @@ export async function resetPassword(
   await delay();
 
   const tokenRecord = resetTokenStore.get(input.resetToken);
-  if (!tokenRecord) {
-    throw new AuthApiError('Invalid reset token.', 'OTP_INVALID', 400);
+  if (!tokenRecord || tokenRecord.used) {
+    throw new AuthApiError('Invalid or already used reset token.', 'OTP_INVALID', 400);
   }
 
   if (Date.now() > tokenRecord.expiresAt) {
-    resetTokenStore.delete(input.resetToken);
     throw new AuthApiError('Reset session expired.', 'OTP_EXPIRED', 400);
   }
 
   const account = accountStore.get(tokenRecord.email);
   if (!account) {
-    resetTokenStore.delete(input.resetToken);
+    tokenRecord.used = true;
     throw new AuthApiError('Account not found.', 'UNKNOWN', 404);
   }
 
   account.password = input.newPassword;
-  resetTokenStore.delete(input.resetToken);
+  tokenRecord.used = true;
 
   return {
     message: 'Your password has been updated successfully.',

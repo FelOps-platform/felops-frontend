@@ -2,8 +2,12 @@
 
 import { redirect } from 'next/navigation';
 import { SIGN_IN_PATH } from './constants';
-import { signOutByToken } from './service';
-import { clearSessionCookie, getSessionToken } from './session.server';
+import { acceptInviteToken, signOutByToken } from './service';
+import {
+  clearSessionCookie,
+  getSession,
+  getSessionToken,
+} from './session.server';
 
 /**
  * Terminates the current session on the server, clears the httpOnly session cookie,
@@ -14,4 +18,17 @@ export async function logoutAction(): Promise<never> {
   await signOutByToken(token);
   await clearSessionCookie();
   redirect(SIGN_IN_PATH);
+}
+
+/**
+ * Accepts a workspace invitation for an authenticated user and navigates to the workspace.
+ */
+export async function acceptInviteAction(token: string): Promise<never> {
+  const session = await getSession();
+  if (!session) {
+    redirect(`${SIGN_IN_PATH}?next=${encodeURIComponent(`/invite/${token}`)}`);
+  }
+
+  const accepted = await acceptInviteToken(token);
+  redirect(`/w/${accepted.workspaceId}`);
 }

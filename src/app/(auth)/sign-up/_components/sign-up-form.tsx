@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, Button } from "@/components/ui";
 import {
   AuthApiError,
   DEFAULT_AUTH_REDIRECT,
+  getSafeRedirectPath,
   mapAuthError,
   resendCode,
   signUp,
@@ -20,18 +21,26 @@ import {
   AuthField,
   PasswordField,
   PasswordRequirements,
+  VerifyOtpModal,
 } from "@/features/auth/components";
-import VerifyOtpModal from "../../_components/VerifyOtpModal";
 
 export function SignUpForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [generalError, setGeneralError] = useState<string | null>(null);
 
-  // OTP Modal State (refactored in Phase 4)
+  const rawNext = searchParams.get("next");
+  const safeRedirectPath = getSafeRedirectPath(rawNext, DEFAULT_AUTH_REDIRECT);
+
+  // OTP Modal State
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [otpError, setOtpError] = useState<string | undefined>(undefined);
   const [registeredEmail, setRegisteredEmail] = useState("");
+  const [otpExpiresAt, setOtpExpiresAt] = useState<string | undefined>(undefined);
+  const [resendAvailableAt, setResendAvailableAt] = useState<string | undefined>(
+    undefined,
+  );
 
   const {
     register,
@@ -67,33 +76,33 @@ export function SignUpForm() {
       });
 
       setRegisteredEmail(response.email);
+      setOtpExpiresAt(response.expiresAt);
+      setResendAvailableAt(response.resendAvailableAt);
       setOtpError(undefined);
       setIsOtpModalOpen(true);
     } catch (err: unknown) {
       const message = mapAuthError(err);
       if (err instanceof AuthApiError && err.code === "EMAIL_TAKEN") {
-        setError(
-          "email",
-          { type: "server", message },
-          { shouldFocus: true },
-        );
+        setError("email", { type: "server", message }, { shouldFocus: true });
         return;
       }
       setGeneralError(message);
     }
   };
 
-  const handleVerifyOtp = async (otpCode: string) => {
+  const handleVerifyOtp = async (otpCode: string): Promise<boolean> => {
     setIsVerifyingOtp(true);
     setOtpError(undefined);
 
     try {
       await verifyEmail({ email: registeredEmail, code: otpCode });
       setIsOtpModalOpen(false);
-      router.replace(DEFAULT_AUTH_REDIRECT);
+      router.replace(safeRedirectPath);
       router.refresh();
+      return true;
     } catch (err: unknown) {
       setOtpError(mapAuthError(err));
+      return false;
     } finally {
       setIsVerifyingOtp(false);
     }
@@ -103,11 +112,26 @@ export function SignUpForm() {
     setOtpError(undefined);
 
     try {
-      await resendCode({ email: registeredEmail, purpose: "verify_email" });
+      const response = await resendCode({
+        email: registeredEmail,
+        purpose: "verify_email",
+      });
+      setOtpExpiresAt(response.expiresAt);
+      setResendAvailableAt(response.resendAvailableAt);
     } catch (err: unknown) {
+      if (err instanceof AuthApiError && err.meta) {
+        if (err.meta.expiresAt) setOtpExpiresAt(err.meta.expiresAt);
+        if (err.meta.resendAvailableAt) {
+          setResendAvailableAt(err.meta.resendAvailableAt);
+        }
+      }
       setOtpError(mapAuthError(err));
     }
   };
+
+  const signInHref = rawNext
+    ? `/sign-in?next=${encodeURIComponent(safeRedirectPath)}`
+    : "/sign-in";
 
   return (
     <div className="w-full">
@@ -180,7 +204,7 @@ export function SignUpForm() {
         <div className="flex items-center justify-center text-xs text-neutral-400 pt-2 gap-1.5">
           <span>Already have an account?</span>
           <Link
-            href="/sign-in"
+            href={signInHref}
             className="text-secondary-50 font-medium hover:underline hover:text-neutral-50 transition-colors"
           >
             Sign In
@@ -194,6 +218,8 @@ export function SignUpForm() {
         email={registeredEmail}
         isVerifying={isVerifyingOtp}
         error={otpError}
+        expiresAt={otpExpiresAt}
+        resendAvailableAt={resendAvailableAt}
         onClearError={() => setOtpError(undefined)}
         onVerify={handleVerifyOtp}
         onResend={handleResendOtp}

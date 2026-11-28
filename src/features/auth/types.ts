@@ -37,15 +37,24 @@ export type AuthErrorCode =
   | 'NETWORK'
   | 'UNKNOWN';
 
+export interface AuthApiErrorMeta {
+  expiresAt?: string;
+  resendAvailableAt?: string;
+}
+
 export class AuthApiError extends ApiError<AuthErrorCode> {
+  readonly meta?: AuthApiErrorMeta;
+
   constructor(
     message: string,
     code: AuthErrorCode,
     status: number,
-    cause?: unknown
+    cause?: unknown,
+    meta?: AuthApiErrorMeta
   ) {
     super(message, code, status, cause);
     this.name = 'AuthApiError';
+    this.meta = meta;
     Object.setPrototypeOf(this, AuthApiError.prototype);
   }
 }
@@ -65,6 +74,8 @@ export interface SignUpResponse {
   message: string;
   email: string;
   requiresVerification: boolean;
+  expiresAt: string;
+  resendAvailableAt: string;
 }
 
 export interface VerifyEmailRequest {
@@ -82,6 +93,8 @@ export interface ResendCodeRequest {
 export interface ResendCodeResponse {
   message: string;
   cooldownSeconds: number;
+  expiresAt: string;
+  resendAvailableAt: string;
 }
 
 export interface ForgotPasswordRequest {
@@ -90,6 +103,8 @@ export interface ForgotPasswordRequest {
 
 export interface ForgotPasswordResponse {
   message: string;
+  expiresAt: string;
+  resendAvailableAt: string;
 }
 
 export interface VerifyResetCodeRequest {
@@ -109,4 +124,21 @@ export interface ResetPasswordRequest {
 
 export interface ResetPasswordResponse {
   message: string;
+}
+
+export type TokenValidationStatus = 'valid' | 'expired' | 'used' | 'invalid';
+
+export interface ResetTokenValidation {
+  status: TokenValidationStatus;
+  expiresAt?: string;
+}
+
+export interface InviteDetails {
+  token: string;
+  status: TokenValidationStatus;
+  workspaceId: string;
+  workspaceName: string;
+  inviterName: string;
+  role: 'Owner' | 'Admin' | 'Member';
+  expiresAt: string;
 }
