@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { SIGN_IN_PATH } from "@/features/auth/constants";
 import { getSafeRedirectPath } from "@/features/auth/redirect";
 import { getSession, hasSessionCookie } from "@/features/auth/session.server";
-import { mockWorkspaces } from "@/data/mock-workspaces";
+import { getWorkspaceById, type Workspace } from "@/features/workspaces";
 import { AppFrame } from "./_components/app-frame";
 import { WorkspaceDynamicSidebar } from "./_components/workspace-dynamic-sidebar";
 import { WorkspaceSidebarFallback } from "./_components/workspace-sidebar";
@@ -28,13 +28,22 @@ async function WorkspaceProtectedShell({
     redirect(`${SIGN_IN_PATH}?${query.toString()}`);
   }
 
-  const hasWorkspaceAccess = mockWorkspaces.some((ws) => ws.id === workspaceId);
-  if (!hasWorkspaceAccess) {
+  let workspace: Workspace;
+  try {
+    workspace = await getWorkspaceById(workspaceId, session.user.id);
+  } catch {
     redirect("/workspaces");
   }
 
   return (
-    <AppFrame sidebar={<WorkspaceDynamicSidebar workspaceId={workspaceId} />}>
+    <AppFrame
+      sidebar={
+        <WorkspaceDynamicSidebar
+          workspaceId={workspace.id}
+          workspaceName={workspace.name}
+        />
+      }
+    >
       {children}
     </AppFrame>
   );

@@ -6,8 +6,10 @@ import { AgentSidebar } from "../agents/_components/agent-sidebar";
 
 export function WorkspaceDynamicSidebar({
   workspaceId,
+  workspaceName,
 }: {
   workspaceId: string;
+  workspaceName?: string;
 }) {
   const pathname = usePathname();
 
@@ -27,5 +29,10 @@ export function WorkspaceDynamicSidebar({
     return <AgentSidebar workspaceId={workspaceId} agentId={potentialAgentId} />;
   }
 
-  return <WorkspaceSidebar workspaceId={workspaceId} />;
+  return (
+    <WorkspaceSidebar
+      workspaceId={workspaceId}
+      workspaceName={workspaceName}
+    />
+  );
 }
