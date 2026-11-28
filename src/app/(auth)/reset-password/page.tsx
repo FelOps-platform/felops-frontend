@@ -37,11 +37,7 @@ function ResetPasswordForm() {
   const onSubmit = async (data: ResetPasswordInput) => {
     setGeneralError(null);
     try {
-      console.log(
-        "Submitting password reset for email:",
-        email,
-        "with new password",
-      );
+      void data;
 
       // TODO: Call backend API to reset password
       // await authService.resetPassword({
@@ -50,15 +46,16 @@ function ResetPasswordForm() {
       // });
 
       setIsSuccess(true);
-      console.log("Password reset successfully.");
 
       // Delay briefly for user feedback before redirecting to Sign In
       setTimeout(() => {
         router.push("/sign-in?reset=true");
       }, 1500);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setGeneralError(
-        err?.message || "Failed to reset password. Please try again.",
+        err instanceof Error
+          ? err.message
+          : "Failed to reset password. Please try again.",
       );
     }
   };
@@ -112,15 +109,20 @@ function ResetPasswordForm() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
         {/* New Password */}
         <div className="space-y-1.5">
-          <label className="block text-xs font-medium text-neutral-300">
+          <label
+            htmlFor="password"
+            className="block text-xs font-medium text-neutral-300"
+          >
             New Password
           </label>
           <div className="relative">
             <input
+              id="password"
               type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
               placeholder="••••••••••••"
               {...register("password")}
               className={`w-full px-4 py-3 rounded-xl bg-neutral-900/40 border text-secondary-50 placeholder-neutral-500 text-sm focus:outline-none transition-colors pr-12 ${
@@ -151,12 +153,17 @@ function ResetPasswordForm() {
 
         {/* Confirm Password */}
         <div className="space-y-1.5">
-          <label className="block text-xs font-medium text-neutral-300">
+          <label
+            htmlFor="confirmPassword"
+            className="block text-xs font-medium text-neutral-300"
+          >
             Confirm New Password
           </label>
           <div className="relative">
             <input
+              id="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
+              autoComplete="new-password"
               placeholder="••••••••••••"
               {...register("confirmPassword")}
               className={`w-full px-4 py-3 rounded-xl bg-neutral-900/40 border text-secondary-50 placeholder-neutral-500 text-sm focus:outline-none transition-colors pr-12 ${

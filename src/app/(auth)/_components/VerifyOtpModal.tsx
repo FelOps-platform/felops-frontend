@@ -194,7 +194,7 @@ export default function VerifyOtpModal({
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} noValidate className="space-y-6">
           <div
             className="flex justify-center gap-2 sm:gap-3"
             onPaste={handlePaste}
@@ -208,6 +208,8 @@ export default function VerifyOtpModal({
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
+                autoComplete="one-time-code"
+                aria-label={`Verification code digit ${index + 1}`}
                 maxLength={1}
                 disabled={isVerifying}
                 value={digit}
@@ -216,7 +218,7 @@ export default function VerifyOtpModal({
                 className={`w-11 h-14 text-center text-lg font-bold rounded-xl transition-all disabled:opacity-50 ${
                   error
                     ? "bg-wrong-50/40 border border-wrong-500 text-wrong-700 focus:outline-none focus:ring-2 focus:ring-wrong-500/20"
-                    : "bg-white border border-neutral-300 text-neutral-900 focus:outline-none focus:border-secondary-500 focus:ring-2 focus:ring-secondary-500/20"
+                    : "bg-neutral-50 border border-neutral-300 text-neutral-900 focus:outline-none focus:border-secondary-500 focus:ring-2 focus:ring-secondary-500/20"
                 }`}
               />
             ))}
@@ -225,7 +227,7 @@ export default function VerifyOtpModal({
           <button
             type="submit"
             disabled={!isComplete || isVerifying}
-            className="w-full py-3.5 px-4 rounded-xl bg-secondary-500 text-white font-semibold text-sm hover:bg-secondary-600 transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-3.5 px-4 rounded-xl bg-secondary-500 text-neutral-50 font-semibold text-sm hover:bg-secondary-600 transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isVerifying ? (
               <>
@@ -240,7 +242,7 @@ export default function VerifyOtpModal({
 
         <div className="mt-6 text-center text-xs text-neutral-600 space-y-2">
           <p>
-            Didn't receive it?{" "}
+            Didn&apos;t receive it?{" "}
             <button
               type="button"
               disabled={timeLeft > 0 || isVerifying}

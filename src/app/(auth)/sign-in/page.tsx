@@ -27,14 +27,18 @@ export default function SignInPage() {
   const onSubmit = async (data: SignInInput) => {
     setGeneralError(null);
     try {
-      console.log("Sign-in form submitted with data:", data);
+      void data;
 
       // TODO: Call backend sign-in API here
       // const response = await authService.signIn(data);
 
       // TODO: Redirect user upon successful sign-in (e.g., router.push("/dashboard"))
-    } catch (err: any) {
-      setGeneralError(err?.message || "Invalid credentials. Please try again.");
+    } catch (err: unknown) {
+      setGeneralError(
+        err instanceof Error
+          ? err.message
+          : "Invalid credentials. Please try again.",
+      );
     }
   };
 
@@ -56,14 +60,19 @@ export default function SignInPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
         {/* Email Address */}
         <div className="space-y-1.5">
-          <label className="block text-xs font-medium text-neutral-300">
+          <label
+            htmlFor="email"
+            className="block text-xs font-medium text-neutral-300"
+          >
             Email address
           </label>
           <input
+            id="email"
             type="email"
+            autoComplete="email"
             placeholder="you@company.com"
             {...register("email")}
             className={`w-full px-4 py-3 rounded-xl bg-neutral-900/40 border text-secondary-50 placeholder-neutral-500 text-sm focus:outline-none transition-colors ${
@@ -80,7 +89,10 @@ export default function SignInPage() {
         {/* Password */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label className="block text-xs font-medium text-neutral-300">
+            <label
+              htmlFor="password"
+              className="block text-xs font-medium text-neutral-300"
+            >
               Password
             </label>
             <Link
@@ -92,7 +104,9 @@ export default function SignInPage() {
           </div>
           <div className="relative">
             <input
+              id="password"
               type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
               placeholder="••••••••••••"
               {...register("password")}
               className={`w-full px-4 py-3 rounded-xl bg-neutral-900/40 border text-secondary-50 placeholder-neutral-500 text-sm focus:outline-none transition-colors pr-12 ${
@@ -139,7 +153,7 @@ export default function SignInPage() {
 
         {/* Sign Up Link */}
         <div className="flex items-center justify-center text-xs text-neutral-400 pt-2 gap-1.5">
-          <span>Don't have an account?</span>
+          <span>Don&apos;t have an account?</span>
           <Link
             href="/sign-up"
             className="text-secondary-50 font-medium hover:underline hover:text-neutral-50 transition-colors"

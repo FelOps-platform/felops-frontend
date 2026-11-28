@@ -35,16 +35,18 @@ export default function SignUpPage() {
   const onSubmit = async (data: SignUpInput) => {
     setGeneralError(null);
     try {
-      console.log("Sign-up form submitted with data:", data);
-
       // TODO: Call backend sign-up API here
       // const response = await authService.signUp(data);
 
       setRegisteredEmail(data.email);
       setOtpError(undefined);
       setIsOtpModalOpen(true);
-    } catch (err: any) {
-      setGeneralError(err?.message || "Something went wrong. Please try again.");
+    } catch (err: unknown) {
+      setGeneralError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
     }
   };
 
@@ -52,19 +54,19 @@ export default function SignUpPage() {
     setIsVerifyingOtp(true);
     setOtpError(undefined);
 
-    console.log("Verifying OTP code:", otpCode, "for email:", registeredEmail);
-
     try {
+      void otpCode;
       // TODO: Call backend verify OTP API here
       // await authService.verifyOtp({ email: registeredEmail, code: otpCode });
 
       setIsOtpModalOpen(false);
-      console.log("OTP verification completed successfully.");
 
       // TODO: Redirect user after successful verification (e.g., router.push("/dashboard"))
-    } catch (err: any) {
+    } catch (err: unknown) {
       setOtpError(
-        err?.message || "Invalid verification code. Please try again.",
+        err instanceof Error
+          ? err.message
+          : "Invalid verification code. Please try again.",
       );
     } finally {
       setIsVerifyingOtp(false);
@@ -72,14 +74,17 @@ export default function SignUpPage() {
   };
 
   const handleResendOtp = async () => {
-    console.log("Resending OTP code to:", registeredEmail);
     setOtpError(undefined);
 
     try {
       // TODO: Call backend resend OTP API here
       // await authService.resendOtp({ email: registeredEmail });
-    } catch (err: any) {
-      setOtpError(err?.message || "Failed to resend code. Please try again.");
+    } catch (err: unknown) {
+      setOtpError(
+        err instanceof Error
+          ? err.message
+          : "Failed to resend code. Please try again.",
+      );
     }
   };
 
@@ -101,14 +106,19 @@ export default function SignUpPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
         {/* Full Name */}
         <div className="space-y-1.5">
-          <label className="block text-xs font-medium text-neutral-300">
+          <label
+            htmlFor="fullName"
+            className="block text-xs font-medium text-neutral-300"
+          >
             Full Name
           </label>
           <input
+            id="fullName"
             type="text"
+            autoComplete="name"
             placeholder="Hana Ehab"
             {...register("fullName")}
             className={`w-full px-4 py-3 rounded-xl bg-neutral-900/40 border text-secondary-50 placeholder-neutral-500 text-sm focus:outline-none transition-colors ${
@@ -126,11 +136,16 @@ export default function SignUpPage() {
 
         {/* Email Address */}
         <div className="space-y-1.5">
-          <label className="block text-xs font-medium text-neutral-300">
+          <label
+            htmlFor="email"
+            className="block text-xs font-medium text-neutral-300"
+          >
             Email address
           </label>
           <input
+            id="email"
             type="email"
+            autoComplete="email"
             placeholder="you@company.com"
             {...register("email")}
             className={`w-full px-4 py-3 rounded-xl bg-neutral-900/40 border text-secondary-50 placeholder-neutral-500 text-sm focus:outline-none transition-colors ${
@@ -146,12 +161,17 @@ export default function SignUpPage() {
 
         {/* Password */}
         <div className="space-y-1.5">
-          <label className="block text-xs font-medium text-neutral-300">
+          <label
+            htmlFor="password"
+            className="block text-xs font-medium text-neutral-300"
+          >
             Password
           </label>
           <div className="relative">
             <input
+              id="password"
               type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
               placeholder="••••••••••••"
               {...register("password")}
               className={`w-full px-4 py-3 rounded-xl bg-neutral-900/40 border text-secondary-50 placeholder-neutral-500 text-sm focus:outline-none transition-colors pr-12 ${

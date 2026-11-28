@@ -37,16 +37,18 @@ export default function ForgotPasswordPage() {
   const onSubmit = async (data: ForgotPasswordInput) => {
     setGeneralError(null);
     try {
-      console.log("Requesting password reset for email:", data.email);
-
       // TODO: Call backend API to send password reset code
       // await authService.forgotPassword(data);
 
       setSubmittedEmail(data.email);
       setOtpError(undefined);
       setIsOtpModalOpen(true);
-    } catch (err: any) {
-      setGeneralError(err?.message || "Something went wrong. Please try again.");
+    } catch (err: unknown) {
+      setGeneralError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
     }
   };
 
@@ -54,26 +56,20 @@ export default function ForgotPasswordPage() {
     setIsVerifyingOtp(true);
     setOtpError(undefined);
 
-    console.log(
-      "Verifying password reset code:",
-      otpCode,
-      "for email:",
-      submittedEmail,
-    );
-
     try {
+      void otpCode;
       // TODO: Call backend API to verify password reset code
       // const response = await authService.verifyResetCode({ email: submittedEmail, code: otpCode });
 
       setIsOtpModalOpen(false);
-      console.log("Reset code verified successfully.");
 
       // Redirect user to reset password page
       router.push(`/reset-password?email=${encodeURIComponent(submittedEmail)}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setOtpError(
-        err?.message ||
-          "Invalid or expired verification code. Please try again.",
+        err instanceof Error
+          ? err.message
+          : "Invalid or expired verification code. Please try again.",
       );
     } finally {
       setIsVerifyingOtp(false);
@@ -81,14 +77,17 @@ export default function ForgotPasswordPage() {
   };
 
   const handleResendOtp = async () => {
-    console.log("Resending password reset code to:", submittedEmail);
     setOtpError(undefined);
 
     try {
       // TODO: Call backend API to resend password reset code
       // await authService.forgotPassword({ email: submittedEmail });
-    } catch (err: any) {
-      setOtpError(err?.message || "Failed to resend code. Please try again.");
+    } catch (err: unknown) {
+      setOtpError(
+        err instanceof Error
+          ? err.message
+          : "Failed to resend code. Please try again.",
+      );
     }
   };
 
@@ -110,14 +109,19 @@ export default function ForgotPasswordPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
         {/* Email Address */}
         <div className="space-y-1.5">
-          <label className="block text-xs font-medium text-neutral-300">
+          <label
+            htmlFor="email"
+            className="block text-xs font-medium text-neutral-300"
+          >
             Email address
           </label>
           <input
+            id="email"
             type="email"
+            autoComplete="email"
             placeholder="you@company.com"
             {...register("email")}
             className={`w-full px-4 py-3 rounded-xl bg-neutral-900/40 border text-secondary-50 placeholder-neutral-500 text-sm focus:outline-none transition-colors ${

@@ -41,8 +41,6 @@ export default function NewWorkspacePage() {
 
     setIsLoading(true);
     try {
-      console.log("Submitting new workspace:", validationResult.data);
-
       // TODO: Call backend API to create workspace
       // const response = await workspaceService.createWorkspace(validationResult.data);
       // const workspaceId = response.data.id;
@@ -55,10 +53,12 @@ export default function NewWorkspacePage() {
           .replace(/[^a-z0-9]+/g, "-") || "new-workspace";
 
       router.push(`/w/${generatedWorkspaceId}`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setErrors({
         general:
-          err?.message || "Failed to create workspace. Please try again.",
+          err instanceof Error
+            ? err.message
+            : "Failed to create workspace. Please try again.",
       });
     } finally {
       setIsLoading(false);
@@ -85,15 +85,20 @@ export default function NewWorkspacePage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
         {/* Workspace Name Input */}
         <div className="space-y-1.5">
-          <label className="block text-xs font-medium text-neutral-300">
+          <label
+            htmlFor="workspace-name"
+            className="block text-xs font-medium text-neutral-300"
+          >
             Workspace Name
           </label>
           <input
+            id="workspace-name"
             type="text"
             name="name"
+            autoComplete="organization"
             value={name}
             onChange={handleNameChange}
             placeholder="e.g. Acme Operations"

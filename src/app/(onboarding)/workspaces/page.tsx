@@ -46,7 +46,7 @@ export default function WorkspacesPage() {
                     {getWorkspaceInitials(ws.name)}
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-secondary-950 group-hover:text-white transition-colors">
+                    <h3 className="text-sm font-semibold text-secondary-950 group-hover:text-neutral-50 transition-colors">
                       {ws.name}
                     </h3>
                     <div className="flex items-center gap-2 text-xs text-secondary-700 mt-0.5">
