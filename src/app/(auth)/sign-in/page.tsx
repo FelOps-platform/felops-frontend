@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
-import { signInSchema, type SignInInput } from "../schemas/auth";
+import { signInSchema, type SignInInput } from "@/features/auth";
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);

@@ -15,10 +15,10 @@ Workspace rules for all Antigravity agents working in the FelOps frontend reposi
 
 ## Forms & Validation
 - **Libraries**: `react-hook-form` + `@hookform/resolvers/zod` + `zod` 4.
-- **Colocated Schemas**: Place Zod schemas in a `schemas/` directory next to the route.
+- **Domain Schemas**: Place domain Zod schemas in `src/features/<domain>/schema.ts` as the Single Source of Truth (or colocated in `schemas/` only for route-only forms not yet migrated to a feature module).
 - **Types**: Derive form types using `z.infer<typeof schema>`.
 - **Submit State**: Disable buttons and show loading spinners when `isSubmitting` is true.
-- **Error Handling**: Type catch blocks with `error: unknown` and narrow safely.
+- **Error Handling**: Type catch blocks with `error: unknown` and narrow safely using domain `ApiError` subclasses (from `src/lib/api/errors.ts`) and domain error mappers.
 
 ## Accessibility (a11y)
 - **Labels**: Every input and textarea must have an explicit `<label>` with `htmlFor` matching the input `id`.
@@ -35,5 +35,6 @@ Async screens and interactive lists must implement all four UI states:
 ## Code Quality & Architecture
 - **No `console.log`**: Never commit `console.log`. Use `console.error` only inside error handlers/catch blocks.
 - **Component Reuse**: Check `src/components/common` and `src/components/ui` before creating new UI components. Extend existing components for light surfaces if needed.
-- **Mock Services**: Services under `services/` return mock data with TODO markers for future API integration.
-- **TypeScript**: Strict mode. No `any`. Centralized types in `src/types/`, route types colocated in `types/`.
+- **Feature Domain Layer (SSOT)**: Domain types (`types.ts`), Zod validation schemas (`schema.ts`), DTO & error mappers (`mappers.ts`), and async services (`service.ts`) live in `src/features/<domain>/` and are exported through `src/features/<domain>/index.ts`.
+- **Shared Errors & Mock Services**: Base `ApiError` lives in `src/lib/api/errors.ts`. Feature services under `src/features/<domain>/service.ts` return typed mock data with TODO markers for future API integration.
+- **TypeScript**: Strict mode. No `any`. Domain models belong in `src/features/<domain>/types.ts`; shared cross-domain types live in `src/types/`.

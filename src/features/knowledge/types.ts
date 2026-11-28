@@ -1,3 +1,5 @@
+import { ApiError } from '@/lib/api/errors';
+
 export type KnowledgeStatus = 'Ready' | 'Processing' | 'Failed';
 
 export type KnowledgeType = 'PDF' | 'DOCX' | 'TXT' | 'URL';
@@ -77,21 +79,18 @@ export interface KnowledgeApiErrorDetails {
   [key: string]: unknown;
 }
 
-export class KnowledgeApiError extends Error {
-  readonly code: KnowledgeErrorCode;
-  readonly status: number;
+export class KnowledgeApiError extends ApiError<KnowledgeErrorCode> {
   readonly details?: KnowledgeApiErrorDetails;
 
   constructor(
     message: string,
     code: KnowledgeErrorCode,
     status: number,
-    details?: KnowledgeApiErrorDetails
+    details?: KnowledgeApiErrorDetails,
+    cause?: unknown
   ) {
-    super(message);
+    super(message, code, status, cause);
     this.name = 'KnowledgeApiError';
-    this.code = code;
-    this.status = status;
     this.details = details;
     Object.setPrototypeOf(this, KnowledgeApiError.prototype);
   }

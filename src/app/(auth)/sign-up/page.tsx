@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
-import { signUpSchema, type SignUpInput } from "../schemas/auth";
+import { signUpSchema, type SignUpInput } from "@/features/auth";
 import VerifyOtpModal from "../_components/VerifyOtpModal";
 
 export default function SignUpPage() {

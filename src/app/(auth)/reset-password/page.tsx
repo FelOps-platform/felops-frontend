@@ -9,7 +9,7 @@ import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import {
   resetPasswordSchema,
   type ResetPasswordInput,
-} from "../schemas/auth";
+} from "@/features/auth";
 
 function ResetPasswordForm() {
   const router = useRouter();

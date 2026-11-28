@@ -9,7 +9,7 @@ import { Loader2, AlertCircle } from "lucide-react";
 import {
   forgotPasswordSchema,
   type ForgotPasswordInput,
-} from "../schemas/auth";
+} from "@/features/auth";
 import VerifyOtpModal from "../_components/VerifyOtpModal";
 
 export default function ForgotPasswordPage() {
