@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { mockWorkspaces, getWorkspaceInitials } from "@/data/mock-workspaces";
+import { getWorkspaceInitials } from "@/features/workspaces";
 import {
   LayoutDashboard,
   Bot,
@@ -21,6 +21,7 @@ import {
 
 interface WorkspaceSidebarProps {
   workspaceId: string;
+  workspaceName?: string;
   onWorkspaceClick?: () => void;
 }
 
@@ -77,13 +78,12 @@ export function WorkspaceSidebarFallback() {
 
 function WorkspaceSidebarContent({
   workspaceId,
+  workspaceName,
   onWorkspaceClick,
 }: WorkspaceSidebarProps) {
   const pathname = usePathname();
 
-  // Find workspace by ID from centralized mock data, or fallback gracefully if ID not found yet
-  const currentWorkspace = mockWorkspaces.find((w) => w.id === workspaceId);
-  const activeWorkspaceName = currentWorkspace?.name || "Workspace";
+  const activeWorkspaceName = workspaceName || "Workspace";
   const workspaceInitials = getWorkspaceInitials(activeWorkspaceName);
 
   return (

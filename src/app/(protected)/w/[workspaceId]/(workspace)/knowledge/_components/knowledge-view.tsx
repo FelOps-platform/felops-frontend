@@ -15,6 +15,7 @@ import {
   getWorkspaceKnowledge,
   deleteWorkspaceKnowledge,
   retryKnowledgeProcessing,
+  formatKnowledgeErrorMessage,
   type KnowledgeItem,
 } from "@/features/knowledge";
 import { Button } from "@/components/ui/button";
@@ -82,9 +83,9 @@ export function KnowledgeView({ workspaceId }: KnowledgeViewProps) {
       } catch (err) {
         setIsError(true);
         setErrorMessage(
-          err instanceof Error
-            ? err.message
-            : "Failed to load knowledge sources. Please try again.",
+          formatKnowledgeErrorMessage(
+            err instanceof Error ? err.message : undefined,
+          ),
         );
       } finally {
         if (showLoadingSpinner) {
@@ -109,9 +110,9 @@ export function KnowledgeView({ workspaceId }: KnowledgeViewProps) {
         if (!ignore) {
           setIsError(true);
           setErrorMessage(
-            err instanceof Error
-              ? err.message
-              : "Failed to load knowledge sources. Please try again.",
+            formatKnowledgeErrorMessage(
+              err instanceof Error ? err.message : undefined,
+            ),
           );
           setIsLoading(false);
         }
@@ -211,10 +212,10 @@ export function KnowledgeView({ workspaceId }: KnowledgeViewProps) {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-secondary-50/10">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-secondary-50">
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-secondary-50">
             Knowledge
           </h1>
-          <p className="text-xs sm:text-sm text-neutral-400 mt-1 max-w-xl">
+          <p className="text-xs sm:text-sm text-secondary-100 mt-1 max-w-xl">
             Manage shared knowledge sources that your Workspace Agents can use
             to understand your business and perform tasks.
           </p>
@@ -238,16 +239,16 @@ export function KnowledgeView({ workspaceId }: KnowledgeViewProps) {
         >
           {/* Toolbar skeleton */}
           <div className="flex justify-between items-center gap-4">
-            <div className="h-10 bg-secondary-900/60 rounded-xl w-64 border border-secondary-50/10" />
-            <div className="h-10 bg-secondary-900/40 rounded-xl w-36 border border-secondary-50/10" />
+            <div className="h-10 bg-neutral-200 rounded-xl w-64 border border-neutral-50" />
+            <div className="h-10 bg-neutral-200 rounded-xl w-36 border border-neutral-50" />
           </div>
 
           {/* Table container skeleton */}
-          <div className="rounded-2xl border border-secondary-50/10 bg-secondary-950/40 p-4 space-y-3">
-            <div className="h-10 bg-secondary-900/40 rounded-xl w-full" />
-            <div className="h-14 bg-secondary-900/20 rounded-xl w-full" />
-            <div className="h-14 bg-secondary-900/20 rounded-xl w-full" />
-            <div className="h-14 bg-secondary-900/20 rounded-xl w-full" />
+          <div className="rounded-2xl border border-neutral-200 bg-neutral-200 p-4 space-y-3">
+            <div className="h-10 bg-neutral-50 rounded-xl w-full" />
+            <div className="h-14 bg-neutral-50 rounded-xl w-full" />
+            <div className="h-14 bg-neutral-50 rounded-xl w-full" />
+            <div className="h-14 bg-neutral-50 rounded-xl w-full" />
           </div>
         </div>
       )}
@@ -334,18 +335,17 @@ export function KnowledgeView({ workspaceId }: KnowledgeViewProps) {
         <div
           aria-live="polite"
           aria-atomic="true"
-          className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"
+          className="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"
         >
           {toasts.map((toast) => (
             <div
               key={toast.id}
-              className={`pointer-events-auto p-3.5 rounded-xl border text-xs sm:text-sm shadow-xl flex items-start gap-2.5 animate-in slide-in-from-bottom-2 duration-150 ${
-                toast.type === "error"
-                  ? "bg-wrong-50 border-wrong-200 text-wrong-950"
-                  : toast.type === "success"
-                    ? "bg-right-50 border-right-200 text-right-950"
-                    : "bg-secondary-50 border-secondary-200 text-secondary-950"
-              }`}
+              className={`pointer-events-auto p-3.5 rounded-xl border text-xs sm:text-sm shadow-xl flex items-start gap-2.5 animate-in slide-in-from-bottom-2 duration-150 ${toast.type === "error"
+                ? "bg-wrong-50 border-wrong-200 text-wrong-950"
+                : toast.type === "success"
+                  ? "bg-right-50 border-right-200 text-right-950"
+                  : "bg-secondary-50 border-secondary-200 text-secondary-950"
+                }`}
             >
               <div className="shrink-0 mt-0.5">
                 {toast.type === "error" ? (

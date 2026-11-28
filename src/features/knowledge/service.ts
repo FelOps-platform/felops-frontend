@@ -72,7 +72,8 @@ const INITIAL_MOCK_ITEMS: Array<Partial<KnowledgeItem>> = [
     type: 'PDF',
     source: 'billing_guidelines.pdf',
     status: 'Failed',
-    errorMessage: 'Ingestion timed out during OCR vectorization',
+    errorMessage:
+      "We couldn't process this source. Please try again or upload a different file.",
     assignedAgents: [],
     createdAt: '2026-11-15T16:00:00Z',
     updatedAt: '2026-11-15T16:00:00Z',
@@ -155,17 +156,17 @@ export async function createWorkspaceKnowledge(
       ? rawInput
       : rawInput.file
         ? {
-            kind: 'file',
-            name: rawInput.name,
-            file: rawInput.file,
-            description: rawInput.description,
-          }
+          kind: 'file',
+          name: rawInput.name,
+          file: rawInput.file,
+          description: rawInput.description,
+        }
         : {
-            kind: 'website',
-            name: rawInput.name,
-            url: rawInput.source,
-            description: rawInput.description,
-          };
+          kind: 'website',
+          name: rawInput.name,
+          url: rawInput.source,
+          description: rawInput.description,
+        };
 
   const targetIdentifier =
     input.kind === 'file' ? input.file.name.trim() : input.url.trim();
