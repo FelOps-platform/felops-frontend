@@ -1,5 +1,6 @@
 import {
   AuthApiError,
+  type AuthErrorCode,
   type ForgotPasswordRequest,
   type ForgotPasswordResponse,
   type OtpPurpose,
@@ -35,6 +36,15 @@ interface StoredResetToken {
   expiresAt: number;
 }
 
+interface MockAuthStores {
+  initialized: boolean;
+  accountStore: Map<string, StoredAccount>;
+  otpStore: Map<string, StoredOtp>;
+  resetTokenStore: Map<string, StoredResetToken>;
+  sessionStore: Map<string, Session>;
+  activeSessionToken: string | null;
+}
+
 const NETWORK_DELAY_MS = 350;
 const OTP_TTL_MS = 5 * 60 * 1000;
 const RESET_TOKEN_TTL_MS = 10 * 60 * 1000;
@@ -42,7 +52,10 @@ const SESSION_TTL_MS = 24 * 60 * 60 * 1000;
 const RESEND_COOLDOWN_MS = 30 * 1000;
 const MOCK_DEFAULT_OTP = '123456';
 
-const INITIAL_ACCOUNTS: Array<{ user: Parameters<typeof mapUserDtoToUser>[0]; password: string }> = [
+const INITIAL_ACCOUNTS: Array<{
+  user: Parameters<typeof mapUserDtoToUser>[0];
+  password: string;
+}> = [
   {
     user: {
       id: 'usr_demo_001',
@@ -65,27 +78,41 @@ const INITIAL_ACCOUNTS: Array<{ user: Parameters<typeof mapUserDtoToUser>[0]; pa
   },
 ];
 
-const accountStore = new Map<string, StoredAccount>();
-const otpStore = new Map<string, StoredOtp>();
-const resetTokenStore = new Map<string, StoredResetToken>();
-let currentSession: Session | null = null;
+const globalForAuth = globalThis as typeof globalThis & {
+  __felopsAuthStores?: MockAuthStores;
+};
 
-function ensureInitialized(): void {
-  if (accountStore.size > 0) return;
-
-  for (const entry of INITIAL_ACCOUNTS) {
-    const user = mapUserDtoToUser(entry.user);
-    accountStore.set(user.email, { user, password: entry.password });
-
-    if (!user.emailVerified) {
-      otpStore.set(otpKey(user.email, 'verify_email'), {
-        code: MOCK_DEFAULT_OTP,
-        purpose: 'verify_email',
-        expiresAt: Date.now() + OTP_TTL_MS,
-        lastSentAt: Date.now() - RESEND_COOLDOWN_MS,
-      });
-    }
+function getStores(): MockAuthStores {
+  if (!globalForAuth.__felopsAuthStores) {
+    globalForAuth.__felopsAuthStores = {
+      initialized: false,
+      accountStore: new Map<string, StoredAccount>(),
+      otpStore: new Map<string, StoredOtp>(),
+      resetTokenStore: new Map<string, StoredResetToken>(),
+      sessionStore: new Map<string, Session>(),
+      activeSessionToken: null,
+    };
   }
+
+  const stores = globalForAuth.__felopsAuthStores;
+  if (!stores.initialized) {
+    for (const entry of INITIAL_ACCOUNTS) {
+      const user = mapUserDtoToUser(entry.user);
+      stores.accountStore.set(user.email, { user, password: entry.password });
+
+      if (!user.emailVerified) {
+        stores.otpStore.set(otpKey(user.email, 'verify_email'), {
+          code: MOCK_DEFAULT_OTP,
+          purpose: 'verify_email',
+          expiresAt: Date.now() + OTP_TTL_MS,
+          lastSentAt: Date.now() - RESEND_COOLDOWN_MS,
+        });
+      }
+    }
+    stores.initialized = true;
+  }
+
+  return stores;
 }
 
 function normalizeEmail(email: string): string {
@@ -115,6 +142,7 @@ function createRandomToken(prefix: string): string {
 }
 
 function issueOtp(email: string, purpose: OtpPurpose): string {
+  const { otpStore } = getStores();
   const key = otpKey(email, purpose);
   const now = Date.now();
   otpStore.set(key, {
@@ -126,21 +154,78 @@ function issueOtp(email: string, purpose: OtpPurpose): string {
   return MOCK_DEFAULT_OTP;
 }
 
-function createSessionForUser(user: User): Session {
+function createSessionRecord(user: User): {
+  session: Session;
+  sessionToken: string;
+} {
+  const stores = getStores();
+  const sessionToken = createRandomToken('sess');
   const session: Session = {
     user: clone(user),
     expiresAt: new Date(Date.now() + SESSION_TTL_MS).toISOString(),
   };
-  currentSession = session;
-  return clone(session);
+  stores.sessionStore.set(sessionToken, session);
+  stores.activeSessionToken = sessionToken;
+  return { session: clone(session), sessionToken };
+}
+
+function isBrowser(): boolean {
+  return typeof window !== 'undefined';
+}
+
+interface ApiErrorPayload {
+  code?: AuthErrorCode;
+  message?: string;
+}
+
+async function requestAuthApi<TResponse>(
+  path: string,
+  options: RequestInit
+): Promise<TResponse> {
+  let response: Response;
+  try {
+    response = await fetch(path, {
+      ...options,
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers ?? {}),
+      },
+    });
+  } catch (err: unknown) {
+    throw new AuthApiError(
+      'Unable to reach authentication service.',
+      'NETWORK',
+      0,
+      err
+    );
+  }
+
+  let payload: (TResponse & ApiErrorPayload) | null = null;
+  try {
+    payload = (await response.json()) as TResponse & ApiErrorPayload;
+  } catch {
+    payload = null;
+  }
+
+  if (!response.ok) {
+    throw new AuthApiError(
+      payload?.message || 'Authentication request failed.',
+      payload?.code ?? 'UNKNOWN',
+      response.status
+    );
+  }
+
+  return payload as TResponse;
 }
 
 /**
- * Authenticate an existing verified user with email and password.
- * TODO: Replace mock store with backend POST /auth/sign-in integration.
+ * Server-side sign-in returning both Session and an opaque sessionToken for httpOnly cookies.
  */
-export async function signIn(input: SignInRequest): Promise<Session> {
-  ensureInitialized();
+export async function signInWithToken(
+  input: SignInRequest
+): Promise<{ session: Session; sessionToken: string }> {
+  const { accountStore } = getStores();
   await delay();
 
   const email = normalizeEmail(input.email);
@@ -162,7 +247,102 @@ export async function signIn(input: SignInRequest): Promise<Session> {
     );
   }
 
-  return createSessionForUser(account.user);
+  return createSessionRecord(account.user);
+}
+
+/**
+ * Server-side email verification returning both Session and an opaque sessionToken.
+ */
+export async function verifyEmailWithToken(
+  input: VerifyEmailRequest
+): Promise<{ session: Session; sessionToken: string }> {
+  const { accountStore, otpStore } = getStores();
+  await delay();
+
+  const email = normalizeEmail(input.email);
+  const account = accountStore.get(email);
+  const key = otpKey(email, 'verify_email');
+  const otp = otpStore.get(key);
+
+  if (!account || !otp) {
+    throw new AuthApiError('Invalid verification code.', 'OTP_INVALID', 400);
+  }
+
+  if (Date.now() > otp.expiresAt) {
+    otpStore.delete(key);
+    throw new AuthApiError('Verification code expired.', 'OTP_EXPIRED', 400);
+  }
+
+  if (otp.code !== input.code.trim()) {
+    throw new AuthApiError('Invalid verification code.', 'OTP_INVALID', 400);
+  }
+
+  otpStore.delete(key);
+  account.user = { ...account.user, emailVerified: true };
+
+  return createSessionRecord(account.user);
+}
+
+/**
+ * Validate a session token against the server session store.
+ */
+export async function getSessionByToken(
+  sessionToken: string | null | undefined
+): Promise<Session | null> {
+  if (!sessionToken) return null;
+
+  const { sessionStore } = getStores();
+  const session = sessionStore.get(sessionToken);
+  if (!session) return null;
+
+  if (Date.now() >= new Date(session.expiresAt).getTime()) {
+    sessionStore.delete(sessionToken);
+    return null;
+  }
+
+  return clone(session);
+}
+
+/**
+ * Revoke a specific session token (or active token if omitted) from the server session store.
+ */
+export async function signOutByToken(
+  sessionToken?: string | null
+): Promise<void> {
+  const stores = getStores();
+  if (sessionToken) {
+    stores.sessionStore.delete(sessionToken);
+    if (stores.activeSessionToken === sessionToken) {
+      stores.activeSessionToken = null;
+    }
+    return;
+  }
+
+  if (stores.activeSessionToken) {
+    stores.sessionStore.delete(stores.activeSessionToken);
+    stores.activeSessionToken = null;
+  }
+}
+
+/**
+ * Authenticate an existing verified user with email and password.
+ * In browser contexts, delegates to POST /api/auth/sign-in so the httpOnly cookie is set.
+ * TODO: Replace mock store with backend POST /auth/sign-in integration.
+ */
+export async function signIn(input: SignInRequest): Promise<Session> {
+  if (isBrowser()) {
+    const data = await requestAuthApi<{ session: Session }>(
+      '/api/auth/sign-in',
+      {
+        method: 'POST',
+        body: JSON.stringify(input),
+      }
+    );
+    return data.session;
+  }
+
+  const { session } = await signInWithToken(input);
+  return session;
 }
 
 /**
@@ -170,7 +350,14 @@ export async function signIn(input: SignInRequest): Promise<Session> {
  * TODO: Replace mock store with backend POST /auth/sign-up integration.
  */
 export async function signUp(input: SignUpRequest): Promise<SignUpResponse> {
-  ensureInitialized();
+  if (isBrowser()) {
+    return requestAuthApi<SignUpResponse>('/api/auth/sign-up', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    });
+  }
+
+  const { accountStore } = getStores();
   await delay();
 
   const email = normalizeEmail(input.email);
@@ -204,34 +391,23 @@ export async function signUp(input: SignUpRequest): Promise<SignUpResponse> {
 
 /**
  * Verify a user's email address using the 6-digit OTP code and create a session.
+ * In browser contexts, delegates to POST /api/auth/verify-email so the httpOnly cookie is set.
  * TODO: Replace mock store with backend POST /auth/verify-email integration.
  */
 export async function verifyEmail(input: VerifyEmailRequest): Promise<Session> {
-  ensureInitialized();
-  await delay();
-
-  const email = normalizeEmail(input.email);
-  const account = accountStore.get(email);
-  const key = otpKey(email, 'verify_email');
-  const otp = otpStore.get(key);
-
-  if (!account || !otp) {
-    throw new AuthApiError('Invalid verification code.', 'OTP_INVALID', 400);
+  if (isBrowser()) {
+    const data = await requestAuthApi<{ session: Session }>(
+      '/api/auth/verify-email',
+      {
+        method: 'POST',
+        body: JSON.stringify(input),
+      }
+    );
+    return data.session;
   }
 
-  if (Date.now() > otp.expiresAt) {
-    otpStore.delete(key);
-    throw new AuthApiError('Verification code expired.', 'OTP_EXPIRED', 400);
-  }
-
-  if (otp.code !== input.code.trim()) {
-    throw new AuthApiError('Invalid verification code.', 'OTP_INVALID', 400);
-  }
-
-  otpStore.delete(key);
-  account.user = { ...account.user, emailVerified: true };
-
-  return createSessionForUser(account.user);
+  const { session } = await verifyEmailWithToken(input);
+  return session;
 }
 
 /**
@@ -241,7 +417,14 @@ export async function verifyEmail(input: VerifyEmailRequest): Promise<Session> {
 export async function resendCode(
   input: ResendCodeRequest
 ): Promise<ResendCodeResponse> {
-  ensureInitialized();
+  if (isBrowser()) {
+    return requestAuthApi<ResendCodeResponse>('/api/auth/resend-code', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    });
+  }
+
+  const { accountStore, otpStore } = getStores();
   await delay();
 
   const email = normalizeEmail(input.email);
@@ -275,7 +458,14 @@ export async function resendCode(
 export async function forgotPassword(
   input: ForgotPasswordRequest
 ): Promise<ForgotPasswordResponse> {
-  ensureInitialized();
+  if (isBrowser()) {
+    return requestAuthApi<ForgotPasswordResponse>('/api/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    });
+  }
+
+  const { accountStore } = getStores();
   await delay();
 
   const email = normalizeEmail(input.email);
@@ -296,7 +486,17 @@ export async function forgotPassword(
 export async function verifyResetCode(
   input: VerifyResetCodeRequest
 ): Promise<VerifyResetCodeResponse> {
-  ensureInitialized();
+  if (isBrowser()) {
+    return requestAuthApi<VerifyResetCodeResponse>(
+      '/api/auth/verify-reset-code',
+      {
+        method: 'POST',
+        body: JSON.stringify(input),
+      }
+    );
+  }
+
+  const { accountStore, otpStore, resetTokenStore } = getStores();
   await delay();
 
   const email = normalizeEmail(input.email);
@@ -335,7 +535,14 @@ export async function verifyResetCode(
 export async function resetPassword(
   input: ResetPasswordRequest
 ): Promise<ResetPasswordResponse> {
-  ensureInitialized();
+  if (isBrowser()) {
+    return requestAuthApi<ResetPasswordResponse>('/api/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    });
+  }
+
+  const { accountStore, resetTokenStore } = getStores();
   await delay();
 
   const tokenRecord = resetTokenStore.get(input.resetToken);
@@ -363,12 +570,19 @@ export async function resetPassword(
 }
 
 /**
- * Terminate the current authenticated session.
+ * Terminate the current authenticated session and clear the httpOnly cookie.
  * TODO: Replace mock state with backend POST /auth/sign-out integration.
  */
 export async function signOut(): Promise<void> {
+  if (isBrowser()) {
+    await requestAuthApi<{ ok: boolean }>('/api/auth/sign-out', {
+      method: 'POST',
+    });
+    return;
+  }
+
   await delay(150);
-  currentSession = null;
+  await signOutByToken();
 }
 
 /**
@@ -376,16 +590,19 @@ export async function signOut(): Promise<void> {
  * TODO: Replace mock state with backend GET /auth/session integration.
  */
 export async function getSession(): Promise<Session | null> {
+  if (isBrowser()) {
+    try {
+      const data = await requestAuthApi<{ session: Session | null }>(
+        '/api/auth/session',
+        { method: 'GET' }
+      );
+      return data.session;
+    } catch {
+      return null;
+    }
+  }
+
   await delay(100);
-
-  if (!currentSession) {
-    return null;
-  }
-
-  if (Date.now() >= new Date(currentSession.expiresAt).getTime()) {
-    currentSession = null;
-    return null;
-  }
-
-  return clone(currentSession);
+  const { activeSessionToken } = getStores();
+  return getSessionByToken(activeSessionToken);
 }
